@@ -1,0 +1,92 @@
+
+{
+    "tablename_example": {
+        "db_column_name_example": "raw_code_example"
+    },
+    "RoofConstructionMaterialCost" : {
+        "RoofConstructionMaterial": "RFCNS",
+        "AverageCost": "TODO",
+        "AverageCarbonOutput": "TODO"
+    },
+    "WallConstructionMaterialCost" : {
+        "WallConstructionMaterial" : "WLCNS",
+        "AverageCost": "TODO",
+        "AverageCarbonOutput": "TODO"
+    },
+    "Buildings" : {
+        "ID" : "PUBID",
+        "CensusRegion": "REGION",
+        "CensusDivision": "CENDIV",
+        "PrincipalBuildingActivity": "PBA",
+        "PrivateOrPublic": "OWNTYPE",
+        "SquareFootage": "SQFT",
+        "SquareFootageCategory": "SQFTC",
+        "BuildingShape": "BLDSHP",
+        "TypeOfComplex": "FACACT"
+    },
+    "AccessibilityModes" : {
+        "NumberOfFloors": "NFLOOR",
+        "NumberOfElevators": "NELVTR",
+        "NumberOfEscalators": "NESLTR"
+    },
+    "WentUnderRenovations" : {
+        "YearOfConstructionCategory": "YRCONC",
+        "Renovations": "RENOV"
+    },
+    "MoreSpecificBuildingActivity" : {
+        "SpecificBuildingID": "PBAPLUS"
+    },
+    "EnergyConsumption" : {
+        "AnnualElectricityConsumption_kWh": "ELCNS",
+        "AnnualElectricityConsumption_BTU": "ELBTU"
+    },
+    "OffersMedicalAssistance" : {
+        "LicensedInpatientBeds": "HCBED",
+        "LicensedNursingBeds": "NRSBED",
+        "PercentOfOutpatientSpace": "OUTHOSPPCT"
+    },
+    "ServesFood" : {
+        "FoodServiceSeating" : "FDSEAT",
+        "DriveThruWindow": "DRVTHRU",
+        "FoodCourt": "COURT"
+    },
+    "Schedule" : {
+        "OpenDuringWeek" :"OPNMF",
+        "OpenOnWeekend": "OPNWE",
+        "TotalHoursOpenPerWeek" :"WKHRS",
+        "NumberOfEmployees": "NWKER",
+        "NumberOfEmployeesCategory": "NWKERC"
+    },
+    "HeatingEnergyUsage" : {
+        "EnergyUsedForMainHeating" : "HT1",
+        "EnergyUsedForSecondaryHeating" : "HT2",
+        "EnergyUsedForCooling": "COOL"
+    },
+    "HasTypeOfHeatPump" : {
+        "HeatPumpType" : ["PKGHPH", "HPHPTHP", "HPHAIR", "HPHGRD", "HPHDUAL", "HPHWTR"],
+        "comments": "Each heat pump type is a boolean yes or no in the listed codes"
+    },
+    "PoweredAirConditioning" : {
+        "PowerType" : ["ELCOOL" ,"NGCOOL","FKCOOL", "PRCOOL", "STCOOL", "CWCOOL", "OTCOOL"],
+        "comments": "Each power type is a boolean yes or no in the listed codes"
+    },
+    "CarbonOutputOfEnergy" : {
+        "EnergySource" :"",
+        "AverageCarbonOutput" : "",
+        "comments" : "currently working on pulling this from another source and putting it into a supplementary table"
+    },
+    "CarbonOutputOfFuel" : {
+        "FuelSource" :"",
+        "AverageCarbonOutput": "",
+        "comments" : "currently working on pulling this from another source and putting it into a supplementary table"
+    },
+    "PoweredAppliances" : {
+        "EnergySourceUsed" : "",
+        "AppliancesPowered" : "",
+        "comments" : "Im confused about this one, but I think it is a boolean yes or no in some codes but I dont know which codes"
+    },
+    "CookingEnergyUsed" : {
+        "EnergySourceUsed": ["ELCOOK", "NGCOOK","FKCOOK", "PRCOOK", "STCOOK", "HWCOOK","WOCOOK","COCOOK","OTCOOK"],
+        "comments": "Each energy type is a boolean yes or no in the listed codes"
+    }
+}
