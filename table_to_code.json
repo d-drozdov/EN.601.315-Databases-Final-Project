@@ -6,12 +6,14 @@
     "RoofConstructionMaterialCost" : {
         "RoofConstructionMaterial": "RFCNS",
         "AverageCost": "TODO",
-        "AverageCarbonOutput": "TODO"
+        "AverageCarbonOutput": "TODO",
+        "comments" : "this information is actually super difficult to get. can do a bunch more research if we'll need this for interesting queries"
     },
     "WallConstructionMaterialCost" : {
         "WallConstructionMaterial" : "WLCNS",
         "AverageCost": "TODO",
-        "AverageCarbonOutput": "TODO"
+        "AverageCarbonOutput": "TODO",
+        "comments" : "this information is actually super difficult to get. can do a bunch more research if we'll need this for interesting queries"
     },
     "Buildings" : {
         "ID" : "PUBID",
@@ -73,11 +75,52 @@
     "CarbonOutputOfEnergy" : {
         "EnergySource" :"",
         "AverageCarbonOutput" : "",
-        "comments" : "currently working on pulling this from another source and putting it into a supplementary table"
+        "comments" : "Should ultimately be the same as CarbonOutputOfFuel"
     },
     "CarbonOutputOfFuel" : {
-        "FuelSource" :"",
-        "AverageCarbonOutput": "",
+        "FuelSource" : {
+            "electricity": {
+                "unit": "gCO2e/kWh",
+                "AverageCarbonOutput": "20"
+            },
+            "naturalGas": {
+                "unit": "gCO2e/kWh",
+                "AverageCarbonOutput": "500"
+            },
+            "fuelOil": {
+                "unit": "gCO2e/gallon",
+                "AverageCarbonOutput": "2750"
+            },
+            "bottledGas": {
+                "unit": "gCO2e/kWh",
+                "AverageCarbonOutput": "210"
+            },
+            "districtSteam": {
+                "unit": "gCO2e/kWh",
+                "AverageCarbonOutput": "235"
+            },
+            "districtHotWater": {
+                "unit": "gCO2e/kWh",
+                "AverageCarbonOutput": "200"
+            },
+            "districtChilledWater": {
+                "unit": "gCO2e/kWh",
+                "AverageCarbonOutput": "250"
+            },
+            "wood": {
+                "unit": "gCO2e/kWh",
+                "AverageCarbonOutput": "60"
+            },
+            "coal": {
+                "unit": "gCO2e/kWh",
+                "AverageCarbonOutput": "900"
+            },
+            "solar": {
+                "unit": "gCO2e/kWh",
+                "AverageCarbonOutput": "0"
+            }
+            
+        },
         "comments" : "currently working on pulling this from another source and putting it into a supplementary table"
     },
     "PoweredAppliances" : {
