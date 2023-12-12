@@ -1,136 +1,88 @@
 {
-    "roofMatAvgCost" : {
-        "unit" : "USD / sq. ft.",
+    "wallMatAvgCost" : {
+        
         "1": {
             "name" : "Brick, stone, or stucco",
+            "unit" : "USD / sq. ft.",
             "cost" : "14"
         },
         "2" : {
             "name" : "Pre-cast concrete panels",
+            "unit" : "USD / sq. ft.",
             "cost" : "25"
         },
         "3" : {
             "name" : "Concrete block or poured concrete (above grade)",
+            "unit" : "USD / sq. ft.",
             "cost" : "17"
         },
         "4" : {
             "name" : "Aluminum, asbestos, plastic, or wood materials (siding, shingles, tiles, etc.)",
+            "unit" : "USD / sq. ft.",
             "cost" : "12"
         },
         "5" : {
             "name" : "Sheet metal panels",
+            "unit" : "USD / sq. ft.",
             "cost" : "24"
         },
         "6" : {
             "name" : "Window or vision glass (glass that can be seen through)",
+            "unit" : "USD / sq. ft.",
             "cost" : "9"
         },
         "7" : {
             "name" : "Decorative or construction glass (glass that cannot be seen through)",
+            "unit" : "USD / sq. ft.",
             "cost" : "50"
         },
         "8" : {
             "name" : "Other",
+            "unit" : "USD / sq. ft.",
             "cost" : "50"
         }
     },
-    "roofMatAvgCarbon" : {
-        "unit" : "kg CO2 / sq.ft.",
-        "1": {
-            "name" : "Brick, stone, or stucco",
-            "intensity" : ""
+    "roofMatAvgCost" : {
+        "1" : {
+            "name" : "Built-up (tar, felts, or fiberglass and a ballast, such as stone)",
+            "unit" : "USD / sq. ft.",
+            "cost" : "5.50" 
         },
         "2" : {
-            "name" : "Pre-cast concrete panels",
-            "intensity" : ""
+            "name" : "Slate or tile shingles",
+            "unit" : "USD / sq. ft.",
+            "cost" : "15.00" 
         },
         "3" : {
-            "name" : "Concrete block or poured concrete (above grade)",
-            "intensity" : ""
+            "name" : "Wood shingles, shakes, or other wooden materials",
+            "unit" : "USD / sq. ft.",
+            "cost" : "5.09" 
         },
         "4" : {
-            "name" : "Aluminum, asbestos, plastic, or wood materials (siding, shingles, tiles, etc.)",
-            "intensity" : ""
+            "name" : "Asphalt, fiberglass, or other shingles",
+            "unit" : "USD / sq. ft.",
+            "cost" : "4.82" 
         },
         "5" : {
-            "name" : "Sheet metal panels",
-            "intensity" : ""
+            "name" : "Metal surfacing",
+            "unit" : "USD / sq. ft.",
+            "cost" : "10.50" 
         },
         "6" : {
-            "name" : "Window or vision glass (glass that can be seen through)",
-            "intensity" : ""
+            "name" : "Plastic, rubber, or synthetic sheeting (single or multiple ply)",
+            "unit" : "USD / sq. ft.",
+            "cost" : "9.45" 
         },
         "7" : {
-            "name" : "Decorative or construction glass (glass that cannot be seen through)",
-            "intensity" : ""
+            "name" : "Concrete",
+            "unit" : "USD / sq. ft.",
+            "cost" : "12.25" 
         },
         "8" : {
             "name" : "Other",
-            "intensity" : ""
+            "unit" : "USD / sq. ft.",
+            "cost" : "15"
         }
-
-
-    },
-    "wallMatAvgCost" : {
-
-    },
-    "wallMatAvgCarbon" : {
-
-    },
-    "fuelCarbonIntensityold": {
-        "electricity" : "",
-        "naturalGas" : "",
-        "fuelOil" : "",
-        "bottledGas" : "",
-        "districtSteam" : "",
-        "districtHotWater" : "",
-        "districtChilledWater" : "",
-        "wood" : "",
-        "coal" : "",
-        "solar" : ""
-    },
-    "fuelCarbonIntensity": {
-        "electricity": {
-            "unit": "gCO2e/kWh",
-            "value": "20"
-        },
-        "naturalGas": {
-            "unit": "gCO2e/kWh",
-            "value": "500"
-        },
-        "fuelOil": {
-            "unit": "gCO2e/gallon",
-            "value": "2750"
-        },
-        "bottledGas": {
-            "unit": "gCO2e/kWh",
-            "value": "210"
-        },
-        "districtSteam": {
-            "unit": "gCO2e/kWh",
-            "value": "235"
-        },
-        "districtHotWater": {
-            "unit": "gCO2e/kWh",
-            "value": "200"
-        },
-        "districtChilledWater": {
-            "unit": "gCO2e/kWh",
-            "value": "250"
-        },
-        "wood": {
-            "unit": "gCO2e/kWh",
-            "value": "60"
-        },
-        "coal": {
-            "unit": "gCO2e/kWh",
-            "value": "900"
-        },
-        "solar": {
-            "unit": "gCO2e/kWh",
-            "value": "0"
-        }
-        
     },
     "CarbonOutputOfFuel" : {
         "FuelSource" : {

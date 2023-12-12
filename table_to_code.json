@@ -5,15 +5,15 @@
     },
     "RoofConstructionMaterialCost" : {
         "RoofConstructionMaterial": "RFCNS",
-        "AverageCost": "TODO",
-        "AverageCarbonOutput": "TODO",
-        "comments" : "this information is actually super difficult to get. can do a bunch more research if we'll need this for interesting queries"
+        "AverageCost": "",
+        "AverageCarbonOutput": "",
+        "comments" : "AverageCost is under RoofMatAvgCost in supplementary_info.json, but average carbon output is difficult to find. Can look into it if necessary"
     },
     "WallConstructionMaterialCost" : {
         "WallConstructionMaterial" : "WLCNS",
-        "AverageCost": "TODO",
-        "AverageCarbonOutput": "TODO",
-        "comments" : "this information is actually super difficult to get. can do a bunch more research if we'll need this for interesting queries"
+        "AverageCost": "",
+        "AverageCarbonOutput": "",
+        "comments" : "AverageCost is under WallMatAvgCost in supplementary_info.json, but average carbon output is difficult to find. Can look into it if necessary"
     },
     "Buildings" : {
         "ID" : "PUBID",
