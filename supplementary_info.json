@@ -1,0 +1,179 @@
+{
+    "roofMatAvgCost" : {
+        "unit" : "USD / sq. ft.",
+        "1": {
+            "name" : "Brick, stone, or stucco",
+            "cost" : "14"
+        },
+        "2" : {
+            "name" : "Pre-cast concrete panels",
+            "cost" : "25"
+        },
+        "3" : {
+            "name" : "Concrete block or poured concrete (above grade)",
+            "cost" : "17"
+        },
+        "4" : {
+            "name" : "Aluminum, asbestos, plastic, or wood materials (siding, shingles, tiles, etc.)",
+            "cost" : "12"
+        },
+        "5" : {
+            "name" : "Sheet metal panels",
+            "cost" : "24"
+        },
+        "6" : {
+            "name" : "Window or vision glass (glass that can be seen through)",
+            "cost" : "9"
+        },
+        "7" : {
+            "name" : "Decorative or construction glass (glass that cannot be seen through)",
+            "cost" : "50"
+        },
+        "8" : {
+            "name" : "Other",
+            "cost" : "50"
+        }
+    },
+    "roofMatAvgCarbon" : {
+        "unit" : "kg CO2 / sq.ft.",
+        "1": {
+            "name" : "Brick, stone, or stucco",
+            "intensity" : ""
+        },
+        "2" : {
+            "name" : "Pre-cast concrete panels",
+            "intensity" : ""
+        },
+        "3" : {
+            "name" : "Concrete block or poured concrete (above grade)",
+            "intensity" : ""
+        },
+        "4" : {
+            "name" : "Aluminum, asbestos, plastic, or wood materials (siding, shingles, tiles, etc.)",
+            "intensity" : ""
+        },
+        "5" : {
+            "name" : "Sheet metal panels",
+            "intensity" : ""
+        },
+        "6" : {
+            "name" : "Window or vision glass (glass that can be seen through)",
+            "intensity" : ""
+        },
+        "7" : {
+            "name" : "Decorative or construction glass (glass that cannot be seen through)",
+            "intensity" : ""
+        },
+        "8" : {
+            "name" : "Other",
+            "intensity" : ""
+        }
+
+
+    },
+    "wallMatAvgCost" : {
+
+    },
+    "wallMatAvgCarbon" : {
+
+    },
+    "fuelCarbonIntensityold": {
+        "electricity" : "",
+        "naturalGas" : "",
+        "fuelOil" : "",
+        "bottledGas" : "",
+        "districtSteam" : "",
+        "districtHotWater" : "",
+        "districtChilledWater" : "",
+        "wood" : "",
+        "coal" : "",
+        "solar" : ""
+    },
+    "fuelCarbonIntensity": {
+        "electricity": {
+            "unit": "gCO2e/kWh",
+            "value": "20"
+        },
+        "naturalGas": {
+            "unit": "gCO2e/kWh",
+            "value": "500"
+        },
+        "fuelOil": {
+            "unit": "gCO2e/gallon",
+            "value": "2750"
+        },
+        "bottledGas": {
+            "unit": "gCO2e/kWh",
+            "value": "210"
+        },
+        "districtSteam": {
+            "unit": "gCO2e/kWh",
+            "value": "235"
+        },
+        "districtHotWater": {
+            "unit": "gCO2e/kWh",
+            "value": "200"
+        },
+        "districtChilledWater": {
+            "unit": "gCO2e/kWh",
+            "value": "250"
+        },
+        "wood": {
+            "unit": "gCO2e/kWh",
+            "value": "60"
+        },
+        "coal": {
+            "unit": "gCO2e/kWh",
+            "value": "900"
+        },
+        "solar": {
+            "unit": "gCO2e/kWh",
+            "value": "0"
+        }
+        
+    },
+    "CarbonOutputOfFuel" : {
+        "FuelSource" : {
+            "electricity": {
+                "unit": "gCO2e/kWh",
+                "AverageCarbonOutput": "20"
+            },
+            "naturalGas": {
+                "unit": "gCO2e/kWh",
+                "AverageCarbonOutput": "500"
+            },
+            "fuelOil": {
+                "unit": "gCO2e/gallon",
+                "AverageCarbonOutput": "2750"
+            },
+            "bottledGas": {
+                "unit": "gCO2e/kWh",
+                "AverageCarbonOutput": "210"
+            },
+            "districtSteam": {
+                "unit": "gCO2e/kWh",
+                "AverageCarbonOutput": "235"
+            },
+            "districtHotWater": {
+                "unit": "gCO2e/kWh",
+                "AverageCarbonOutput": "200"
+            },
+            "districtChilledWater": {
+                "unit": "gCO2e/kWh",
+                "AverageCarbonOutput": "250"
+            },
+            "wood": {
+                "unit": "gCO2e/kWh",
+                "AverageCarbonOutput": "60"
+            },
+            "coal": {
+                "unit": "gCO2e/kWh",
+                "AverageCarbonOutput": "900"
+            },
+            "solar": {
+                "unit": "gCO2e/kWh",
+                "AverageCarbonOutput": "0"
+            }       
+        }
+    }
+}

@@ -78,50 +78,9 @@
         "comments" : "Should ultimately be the same as CarbonOutputOfFuel"
     },
     "CarbonOutputOfFuel" : {
-        "FuelSource" : {
-            "electricity": {
-                "unit": "gCO2e/kWh",
-                "AverageCarbonOutput": "20"
-            },
-            "naturalGas": {
-                "unit": "gCO2e/kWh",
-                "AverageCarbonOutput": "500"
-            },
-            "fuelOil": {
-                "unit": "gCO2e/gallon",
-                "AverageCarbonOutput": "2750"
-            },
-            "bottledGas": {
-                "unit": "gCO2e/kWh",
-                "AverageCarbonOutput": "210"
-            },
-            "districtSteam": {
-                "unit": "gCO2e/kWh",
-                "AverageCarbonOutput": "235"
-            },
-            "districtHotWater": {
-                "unit": "gCO2e/kWh",
-                "AverageCarbonOutput": "200"
-            },
-            "districtChilledWater": {
-                "unit": "gCO2e/kWh",
-                "AverageCarbonOutput": "250"
-            },
-            "wood": {
-                "unit": "gCO2e/kWh",
-                "AverageCarbonOutput": "60"
-            },
-            "coal": {
-                "unit": "gCO2e/kWh",
-                "AverageCarbonOutput": "900"
-            },
-            "solar": {
-                "unit": "gCO2e/kWh",
-                "AverageCarbonOutput": "0"
-            }
-            
-        },
-        "comments" : "currently working on pulling this from another source and putting it into a supplementary table"
+        "FuelSource" : "",
+        "AverageCarbonOutput" : "",
+        "comments" : "data can be found in CarbonOutputOfFuel object in ./supplementary_info.json"
     },
     "PoweredAppliances" : {
         "EnergySourceUsed" : "",
