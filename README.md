@@ -19,7 +19,7 @@ https://docs.google.com/document/d/1_ka7YllXoApUvIEmIybpcsXvSgx6iED6z6dHNQHdfyU/
 - [ ] Connect the db (2hr)
 ### Evan
 - [ ] Write Up (3hr) 
-- [ ] Map codes to keys (2hr) - today
+- [ ] Map codes to keys - done
 - [ ] Report Generation (3-4hr)
 - [ ] Figma for website (2hr) --->  https://ui.shadcn.com/
 ### Jonathan
