@@ -22,7 +22,7 @@ def extract_codes(debug: str = False) -> dict:
 
 
 def main():
-    codes_dict= extract_codes(debug=True)
+    codes_dict = extract_codes(debug=True)
 
 
 
