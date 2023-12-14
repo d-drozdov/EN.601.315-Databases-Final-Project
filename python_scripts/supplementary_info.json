@@ -1,6 +1,5 @@
 {
-    "wallMatAvgCost" : {
-        
+    "WallConstructionMaterial" : {
         "1": {
             "name" : "Brick, stone, or stucco",
             "unit" : "USD / sq. ft.",
@@ -42,7 +41,7 @@
             "cost" : "50"
         }
     },
-    "roofMatAvgCost" : {
+    "roofMatAvg" : {
         "1" : {
             "name" : "Built-up (tar, felts, or fiberglass and a ballast, such as stone)",
             "unit" : "USD / sq. ft.",
@@ -84,7 +83,7 @@
             "cost" : "15"
         }
     },
-    "CarbonOutputOfFuel" : {
+    "EnergySources" : {
         "FuelSource" : {
             "electricity": {
                 "unit": "gCO2e/kWh",
@@ -125,7 +124,11 @@
             "solar": {
                 "unit": "gCO2e/kWh",
                 "AverageCarbonOutput": "0"
-            }       
+            },
+            "other": {
+                "unit": "gCO2e/kWh",
+                "AverageCarbonOutput": "0"
+            }
         }
     }
 }

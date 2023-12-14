@@ -1,15 +1,11 @@
-
 {
-    "tablename_example": {
-        "db_column_name_example": "raw_code_example"
-    },
-    "RoofConstructionMaterialCost" : {
+    "RoofConstructionMaterials" : {
         "RoofConstructionMaterial": "RFCNS",
         "AverageCost": "",
         "AverageCarbonOutput": "",
         "comments" : "AverageCost is under RoofMatAvgCost in supplementary_info.json, but average carbon output is difficult to find. Can look into it if necessary"
     },
-    "WallConstructionMaterialCost" : {
+    "WallConstructionMaterials" : {
         "WallConstructionMaterial" : "WLCNS",
         "AverageCost": "",
         "AverageCarbonOutput": "",
@@ -69,7 +65,7 @@
         "comments": "Each heat pump type is a boolean yes or no in the listed codes"
     },
     "PoweredAirConditioning" : {
-        "PowerType" : ["ELCOOL" ,"NGCOOL","FKCOOL", "PRCOOL", "STCOOL", "CWCOOL", "OTCOOL"],
+        "PowerType" : "MAINCL",
         "comments": "Each power type is a boolean yes or no in the listed codes"
     },
     "CarbonOutputOfEnergy" : {

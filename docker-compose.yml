@@ -1,0 +1,9 @@
+version: '1.0'
+name: db_final
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"

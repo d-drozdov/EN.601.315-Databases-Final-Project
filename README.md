@@ -27,12 +27,20 @@ https://docs.google.com/document/d/1_ka7YllXoApUvIEmIybpcsXvSgx6iED6z6dHNQHdfyU/
 - [ ] Make changes to db tables -- add foriegn id keyword to foreign keys and also create specific id
 - [ ] Queries (4hr)  -- set up queries 
 
-#### TODO for everyone who does not have this:
-Download docker - https://formulae.brew.sh/formula/docker
-psql 15 - follow this guide https://www.docker.com/blog/how-to-use-the-postgres-docker-official-image/
 
-Install datagrip 
-Connect to docker instance
+## Local Development
+### Requirements:
+- Python 3.10
+- PIP
+- Docker
+
+### Setup
+1. Clone the repo
+2. Run `pip install -r requirements.txt`
+3. Run `docker compose up -d`
+4. To connect to this db use the following connection string: `postgresql://postgres:postgres@localhost:5432/postgres`
+
+
 
 
 
