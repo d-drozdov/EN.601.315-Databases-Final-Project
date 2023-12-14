@@ -74,3 +74,23 @@ How does energy consumption (electricity, natural gas) vary with the size of the
 Does the year of construction affect the materials chosen for either roofs or walls?
 
 What are the most common types of air conditioning and heating systems used in buildings, and how do they correlate with building size and type?
+
+What are the most common roof and wall construction materials used in buildings owned by different types of entities (e.g., private, government, non-profit)?
+
+In buildings with food service facilities, how does the usage of natural gas vary compared to buildings without such facilities?
+
+Which industries are most likely to adopt advanced lighting technologies like LEDs and lighting control systems? What about public vs private?
+
+What is the efficiency of different water heating systems (measured by energy consumption per unit of hot water produced) categorized by the fuel type used (e.g., electricity, natural gas, solar)?
+
+Is there a preference for certain types of energy sources in buildings of specific age categories?
+
+How does the energy usage (electricity and natural gas) compare between buildings that have undergone major renovations and those that have not, within the same size and activity category?
+
+What types of air conditioning systems are most commonly used in buildings located in the warmest census regions?
+
+What is the most common type of heating equipment in buildings over 100,000 square feet?
+
+Does the variety of energy sources used differ significantly in buildings that are open 24/7 compared to those with more standard operating hours?
+
+How does the choice of fuel for water heating vary between buildings smaller than 10,000 square feet and those larger than 50,000 square feet?
