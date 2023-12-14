@@ -1,5 +1,5 @@
 -- Define roof_construction_material_cost table
-DROP TABLE IF EXISTS roof_construction_materials;
+DROP TABLE IF EXISTS roof_construction_materials CASCADE;
 CREATE TABLE roof_construction_materials (
     id INT PRIMARY KEY,
     roof_construction_material VARCHAR(255) NOT NULL,
@@ -8,7 +8,7 @@ CREATE TABLE roof_construction_materials (
 );
 
 -- Define wall_construction_material_cost table
-DROP TABLE IF EXISTS wall_construction_materials;
+DROP TABLE IF EXISTS wall_construction_materials CASCADE;
 CREATE TABLE wall_construction_materials (
     id INT PRIMARY KEY,
     wall_construction_material VARCHAR(255) NOT NULL,
@@ -17,35 +17,35 @@ CREATE TABLE wall_construction_materials (
 );
 
 --Define principal_building_activity table
-DROP TABLE IF EXISTS principal_building_activity;
+DROP TABLE IF EXISTS principal_building_activity CASCADE;
 CREATE TABLE principal_building_activity (
     id INT PRIMARY KEY,
     label VARCHAR(255) NOT NULL --40
 );
 
 --Define census_region table
-DROP TABLE IF EXISTS census_regions;
+DROP TABLE IF EXISTS census_regions CASCADE;
 CREATE TABLE census_regions (
     id INT PRIMARY KEY,
     label VARCHAR(255) NOT NULL --2
 );
 
 --Define building_owner_type table
-DROP TABLE IF EXISTS building_owner_type;
+DROP TABLE IF EXISTS building_owner_type CASCADE;
 CREATE TABLE building_owner_type (
     id INT PRIMARY KEY,
     label VARCHAR(255) NOT NULL --62
 );
 
 --Define complex_type table
-DROP TABLE IF EXISTS complex_type;
+DROP TABLE IF EXISTS complex_type CASCADE;
 CREATE TABLE complex_type (
     id INT PRIMARY KEY,
     label VARCHAR(255) NOT NULL --52
 );
 
 --Define year_of_construction_category table
-DROP TABLE IF EXISTS year_of_construction_category;
+DROP TABLE IF EXISTS year_of_construction_category CASCADE;
 CREATE TABLE year_of_construction_category (
     id INT PRIMARY KEY, --22
     lower_bound INT NOT NULL,
@@ -53,7 +53,7 @@ CREATE TABLE year_of_construction_category (
 );
 
 -- Define buildings table
-DROP TABLE IF EXISTS buildings;
+DROP TABLE IF EXISTS buildings CASCADE;
 CREATE TABLE buildings (
     id INT PRIMARY KEY, -- 1
     census_region INT, -- 2
@@ -123,7 +123,7 @@ CREATE TABLE serves_food (
     building_id INT PRIMARY KEY, -- 1
     food_service_seating INT, --44
     drive_thru_window BOOLEAN, --45
-    food_court BOOLEAN, --40
+    food_court BOOLEAN, --49
     FOREIGN KEY (building_id) REFERENCES buildings(id) ON DELETE CASCADE
 );
 
@@ -139,7 +139,7 @@ CREATE TABLE schedules (
 );
 
 -- Define energy_sources table
-DROP TABLE IF EXISTS energy_sources;
+DROP TABLE IF EXISTS energy_sources CASCADE
 CREATE TABLE energy_sources (
     id SERIAL PRIMARY KEY,
     fuel_source VARCHAR(255),
@@ -158,14 +158,14 @@ CREATE TABLE energy_sources_used (
 );
 
 --DEFINE MAIN_AIR_CONDITIONIG_TYPE
-DROP TABLE IF EXISTS main_air_conditioning_type;
+DROP TABLE IF EXISTS main_air_conditioning_type CASCADE;
 CREATE TABLE main_air_conditioning_type (
     id INT PRIMARY KEY,
     label VARCHAR(255) NOT NULL -- 365
 );
 
 --DEFINE MAIN_HEATING_EQUIPMENT
-DROP TABLE IF EXISTS main_heating_equipment;
+DROP TABLE IF EXISTS main_heating_equipment CASCADE;
 CREATE TABLE main_heating_equipment (
     id INT PRIMARY KEY,
     label VARCHAR(255) NOT NULL --293
@@ -186,7 +186,7 @@ CREATE TABLE heating_and_ac_info
 
 
 -- Define water_heating_equipment
-DROP TABLE IF EXISTS water_heating_equipment;
+DROP TABLE IF EXISTS water_heating_equipment CASCADE;
 CREATE TABLE water_heating_equipment
 (
     id                                INT PRIMARY KEY,
@@ -194,7 +194,7 @@ CREATE TABLE water_heating_equipment
 );
 
 -- Define water_heating_info
-DROP TABLE IF EXISTS water_heating_info;
+DROP TABLE IF EXISTS water_heating_info CASCADE;
 CREATE TABLE water_heating_info
 (
     building_id                       INT PRIMARY KEY,
@@ -208,13 +208,13 @@ CREATE TABLE water_heating_info
     coal_used           BOOLEAN,
     solar_thermal_used  BOOLEAN,
     other_fuel_used     BOOLEAN, -- 388
-    water_heating_equipment_type INT,
+    water_heating_equipment_type INT, -- 389
     FOREIGN KEY (building_id) REFERENCES buildings (id) ON DELETE CASCADE,
     FOREIGN KEY (water_heating_equipment_type) REFERENCES water_heating_equipment(id)
 );
 
 --define window_types
-DROP TABLE IF EXISTS window_types;
+DROP TABLE IF EXISTS window_types CASCADE;
 CREATE TABLE window_types (
     id INT PRIMARY KEY,
     label VARCHAR(255) NOT NULL --556
@@ -238,6 +238,7 @@ CREATE TABLE lighting_information (
     percent_fluorescent decimal(5, 2) check(percent_fluorescent >= 0 and percent_fluorescent <= 100),--538
     percent_compact_fluorescent decimal(5, 2) check(percent_compact_fluorescent >= 0 and percent_compact_fluorescent <= 100),
     percent_incandescent decimal(5, 2) check(percent_incandescent >= 0 and percent_incandescent <= 100),
+    percent_halogen decimal(5, 2) check(percent_halogen >= 0 and percent_halogen <= 100),
     percent_HID decimal(5, 2) check(percent_HID >= 0 and percent_HID <= 100),
     percent_LED decimal(5, 2) check(percent_LED >= 0 and percent_LED <= 100),
     percent_other decimal(5, 2) check(percent_other >= 0 and percent_other <= 100),
