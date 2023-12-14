@@ -55,15 +55,15 @@ CREATE TABLE year_of_construction_category (
 -- Define buildings table
 DROP TABLE IF EXISTS buildings;
 CREATE TABLE buildings (
-    id INT PRIMARY KEY, -- Refers to PUBID in csv
-    census_region INT,
-    principal_building_activity INT ,
-    building_owner_type INT,
-    square_footage INT NOT NULL CHECK (square_footage >= 0),
-    wall_construction_material_id INT,
-    roof_construction_material_id INT,
-    type_of_complex INT,
-    year_of_construction_category INT,
+    id INT PRIMARY KEY, -- 1
+    census_region INT, -- 2
+    principal_building_activity INT, -- 3
+    building_owner_type INT, -- 62
+    square_footage INT CHECK (square_footage >= 0), -- 6
+    wall_construction_material_id INT, -- 8
+    roof_construction_material_id INT, -- 9
+    type_of_complex INT,  -- 52
+    year_of_construction_category INT, -- 22
     FOREIGN KEY (roof_construction_material_id) REFERENCES roof_construction_materials(id) ON DELETE SET NULL,
     FOREIGN KEY (wall_construction_material_id) REFERENCES wall_construction_materials(id) ON DELETE SET NULL,
     FOREIGN KEY (principal_building_activity) REFERENCES principal_building_activity(id) ON DELETE SET NULL,
@@ -76,8 +76,7 @@ CREATE TABLE buildings (
 -- Define accessibility_modes table
 DROP TABLE IF EXISTS accessibility_modes;
 CREATE TABLE accessibility_modes (
-    id SERIAL PRIMARY KEY,
-    building_id INT,
+    building_id INT PRIMARY KEY, --1
     number_of_floors VARCHAR(10), --14
     number_of_elevators VARCHAR(10), --19
     number_of_escalators VARCHAR(10), --21
@@ -87,29 +86,28 @@ CREATE TABLE accessibility_modes (
 -- Define went_under_renovations table
 DROP TABLE IF EXISTS renovations_since_2000;
 CREATE TABLE renovations_since_2000 (
-    id SERIAL PRIMARY KEY,
-    building_id INT,
+    building_id INT PRIMARY KEY , --1
     cosmetic_improvements BOOLEAN,--24
-    addition_or_annex BOOLEAN,
-    reduced_floorspace BOOLEAN,
-    wall_reconfig BOOLEAN,
-    roof_replace BOOLEAN,
-    window_replace BOOLEAN,
-    hvac_equip_upgrade BOOLEAN,
-    lighting_upgrade BOOLEAN,
-    plumbing_system_upgrade BOOLEAN,
-    insulation_upgrade BOOLEAN,
-    fire_safety_upgrade BOOLEAN,
-    structural_upgrade BOOLEAN,
+    addition_or_annex BOOLEAN, --25
+    reduced_floorspace BOOLEAN, --26
+    wall_reconfig BOOLEAN, --27
+    roof_replace BOOLEAN, --28
+    window_replace BOOLEAN, --29
+    hvac_equip_upgrade BOOLEAN, --30
+    lighting_upgrade BOOLEAN, --31
+    plumbing_system_upgrade BOOLEAN, --32
+    electrical_upgrade BOOLEAN, --33
+    insulation_upgrade BOOLEAN, --34
+    fire_safety_upgrade BOOLEAN, --35
+    structural_upgrade BOOLEAN, --36
     other_renovations BOOLEAN, --37
     FOREIGN KEY (building_id) REFERENCES buildings(id) ON DELETE CASCADE
 );
 
 -- Define energy_consumption table
-DROP TABLE IF EXISTS energy_consumption;
+DROP TABLE IF EXISTS annual_energy_consumption;
 CREATE TABLE annual_energy_consumption(
-    id SERIAL PRIMARY KEY,
-    building_id INT,
+    building_id INT PRIMARY KEY, --1
     electricity_consumption_thous_btu INT CHECK (electricity_consumption_thous_btu >= 0), -- 567
     electricity_expenditure_USD INT CHECK (electricity_expenditure_USD >= 0), -- 569
     natural_gas_consumption_thous_btu INT CHECK (natural_gas_consumption_thous_btu >= 0), -- 570
@@ -119,21 +117,10 @@ CREATE TABLE annual_energy_consumption(
     FOREIGN KEY (building_id) REFERENCES buildings(id) ON DELETE CASCADE
 );
 
--- Define offers_medical_assistance table
-DROP TABLE IF EXISTS offers_medical_assistance;
-CREATE TABLE offers_medical_assistance (
-    building_id INT PRIMARY KEY,
-    licensed_inpatient_beds INT,
-    licensed_nursing_beds INT,
-    percent_of_outpatient_space DECIMAL(5, 2),
-    FOREIGN KEY (building_id) REFERENCES buildings(id) ON DELETE CASCADE
-);
-
 -- Define serves_food table
 DROP TABLE IF EXISTS serves_food;
 CREATE TABLE serves_food (
-    id SERIAL PRIMARY KEY,
-    building_id INT,
+    building_id INT PRIMARY KEY, -- 1
     food_service_seating INT, --44
     drive_thru_window BOOLEAN, --45
     food_court BOOLEAN, --40
@@ -143,8 +130,7 @@ CREATE TABLE serves_food (
 -- Define schedule table
 DROP TABLE IF EXISTS schedules;
 CREATE TABLE schedules (
-    id SERIAL PRIMARY KEY,
-    building_id INT,
+    building_id INT PRIMARY KEY, -- 1
     open_during_week BOOLEAN, --75
     open_on_weekend BOOLEAN, --76
     total_hours_open_per_week INT,--77
@@ -159,14 +145,14 @@ CREATE TABLE energy_sources (
     fuel_source VARCHAR(255),
     average_carbon_output DECIMAL(5, 1) CHECK (average_carbon_output >= 0),
     unit VARCHAR(255) NOT NULL
-); --d
+);
 
 --DEFINE energy_sources_used
 DROP TABLE IF EXISTS energy_sources_used;
 CREATE TABLE energy_sources_used (
     id SERIAL PRIMARY KEY,
     building_id INT,
-    energy_source INT, --88 -98
+    energy_source INT, --88-98
     FOREIGN KEY (building_id) REFERENCES buildings (id) ON DELETE CASCADE,
     FOREIGN KEY (energy_source) REFERENCES energy_sources (id) ON DELETE CASCADE
 );
@@ -189,11 +175,10 @@ CREATE TABLE main_heating_equipment (
 DROP TABLE IF EXISTS heating_and_ac_info;
 CREATE TABLE heating_and_ac_info
 (
-    id                                SERIAL PRIMARY KEY,
-    building_id                       INT,
+    building_id                       INT PRIMARY KEY , --1
     has_smart_thermostat BOOLEAN,  -- 371
-    main_air_conditioning_type INT,
-    main_heating_equipment_type INT,
+    main_air_conditioning_type INT, -- 365
+    main_heating_equipment_type INT, -- 293
     FOREIGN KEY (building_id) REFERENCES buildings (id) ON DELETE CASCADE,
     FOREIGN KEY (main_air_conditioning_type) REFERENCES main_air_conditioning_type(id),
     FOREIGN KEY (main_heating_equipment_type) REFERENCES main_heating_equipment(id)
@@ -238,9 +223,8 @@ CREATE TABLE window_types (
 -- Define window_information table
 DROP TABLE IF EXISTS window_information;
 CREATE TABLE window_information (
-    id SERIAL PRIMARY KEY,
-    building_id INT,
-    window_type INT,
+    building_id INT PRIMARY KEY, --1
+    window_type INT, --556
     has_tinted_windows BOOLEAN, --557
     has_reflective_windows BOOLEAN, --558
     FOREIGN KEY (building_id) REFERENCES buildings(id) ON DELETE CASCADE,
@@ -250,8 +234,7 @@ CREATE TABLE window_information (
 -- Define lighting_information table
 DROP TABLE IF EXISTS lighting_information; --538-545
 CREATE TABLE lighting_information (
-    id SERIAL PRIMARY KEY,
-    building_id INT,
+    building_id INT PRIMARY KEY, --1
     percent_fluorescent decimal(5, 2) check(percent_fluorescent >= 0 and percent_fluorescent <= 100),--538
     percent_compact_fluorescent decimal(5, 2) check(percent_compact_fluorescent >= 0 and percent_compact_fluorescent <= 100),
     percent_incandescent decimal(5, 2) check(percent_incandescent >= 0 and percent_incandescent <= 100),
