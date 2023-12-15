@@ -24,7 +24,8 @@ GROUP BY
 -- The finding might reflect adherence to common building regulations or standards across the U.S., leading to uniformity in construction material choices and costs.
 
 -- Question: How does the average annual electricity and natural gas consumption compare across different principal building activities and building owner types?
--- Grouped by principal building activity
+-- Query was broken into two parts, one for principal building activity, another for building owner type
+-- Query is grouped by principal building activity
 WITH BuildingEnergy AS (
     SELECT
         p.label AS industry,
@@ -74,6 +75,7 @@ ORDER BY
 -- is so high.
 
 -- Question: What is the average electricity and natural gas consumption for buildings that have undergone specific types of renovations (like HVAC equipment upgrade, insulation upgrade) compared to those that haven't?
+-- Query was broken into three parts, one for HVAC Upgrade, one for Insulation Upgrade, and another for Fire Safety Upgrade
 -- Average consumption for buildings with HVAC equipment upgrade
 SELECT
     CASE
@@ -127,7 +129,7 @@ GROUP BY
 -- Average Natural Gas Consumption for buildings with Fire Safety upgrade was nearly three times that of buildings without Fire Safety upgrade
 
 -- Question: What is the average electricity consumption per square foot for buildings, categorized by their construction year range? Usage type?
--- Average electricity consumption per square foot by construction year range
+-- Query was broken into two parts, one for Construction Year Range, another for Usage Type
 -- Average electricity consumption per square foot by construction year range
 SELECT
     CASE
@@ -272,7 +274,7 @@ LEFT JOIN
     annual_energy_consumption ae ON ndb.building_id = ae.building_id;
 -- Electricity consumption for "No Daylight" is higher
 
--- I decided to break up the query then into census_region
+-- Query was broken based on census region 
 WITH DaylightBuildings AS (
     SELECT
         b.id AS building_id,
@@ -331,6 +333,8 @@ GROUP BY
 -- I think you can do a double bar plot here
 
 -- Question: Compare the energy consumption of buildings with different types of heating and cooling systems. Find heating and cooling efficiency (energy consumption per square foot) for each type of system.
+-- Query was broken into two parts, one for Heating Systems, one for Cooling Systems
+-- Analysis for Heating Systems
 WITH HeatingSystems AS (
     SELECT
         b.id AS building_id,
@@ -360,6 +364,7 @@ ORDER BY
     avg_energy_consumption_per_sqft;
 -- coal furnace was by far the worst, with propane heat pump being the lowest
 
+-- Analysis for Cooling Systems
 WITH CoolingSystems AS (
     SELECT
         b.id AS building_id,
@@ -472,6 +477,7 @@ ORDER BY
 -- Buildings with no windows have the lowest average electricity and natural gas consumption among the specified categories.
 
 -- Question: Evaluate the impact of various lighting technologies (LED, fluorescent, etc.) on a building's electricity consumption.
+-- Buildings that utilized a certain lighting technology more than 50% of the time were categorized into using that lighting techology
 WITH LightingCategories AS (
     SELECT
         b.id AS building_id,
@@ -508,6 +514,7 @@ ORDER BY
 -- consume larger amount of electricity.
 
 -- Question: How does energy consumption (electricity, natural gas) vary with the size of the building (square footage)? Does efficiency increase or decrease with building size?
+-- Buildings were categorized into 8 categories based on square footage
 WITH BuildingSizeEnergyConsumption AS (
     SELECT
         b.id AS building_id,
@@ -548,6 +555,8 @@ ORDER BY
 -- The largest buildings have the worst efficiency, and it probably shows there is a middle ground where buildings of a certain size group have the best efficiency.
 
 -- Question: Does the year of construction affect the materials chosen for either roofs or walls?
+-- Query was split into two parts, one for Roof Construction materials, one for Walls Construction materials
+-- For Roof Construction
 WITH RoofConstruction AS (
     SELECT
         b.id AS building_id,
@@ -583,6 +592,7 @@ ORDER BY
 -- Then for certain materials, you can do a histogram to show the changing usage based on percentage, ex. how Plastic, rubber, or synthetic sheeting
 -- mostly always stayed at a 30 - 36% percentage.
 
+-- For Wall Construction
 WITH WallConstruction AS (
     SELECT
         b.id AS building_id,
@@ -617,6 +627,8 @@ ORDER BY
 -- Brick, stone, or stucco dominated "Before 1946" at 72%, but then decreased to "2013-2018" to be 41%
 
 -- Question: What are the most common types of air conditioning and heating systems used in buildings, and how do they correlate with building size and complex type?
+-- Query was broken up into two parts, one for air conditioning, another for heating systems
+-- For Air Conditioning Information
 WITH AirConditioningInformation AS (
     SELECT
         b.id AS building_id,
@@ -651,6 +663,7 @@ ORDER BY
 -- Colleges largely utilized district chilled water systems (48%)
 -- Hospitals largely utilized Electric chillers (49%)
 
+-- For Heating Information
 WITH HeatingInformation AS (
     SELECT
         b.id AS building_id,
@@ -683,6 +696,8 @@ ORDER BY
     complex_type, building_count DESC;
 
 -- Question: What are the most common roof and wall construction materials used in buildings owned by different types of entities (e.g., private, government, non-profit)?
+-- Query was broken up into two parts, one for roof, another for wall
+-- For Roof Construction
 WITH RoofConstructionMaterials AS (
     SELECT
         b.id AS building_id,
@@ -707,6 +722,7 @@ ORDER BY
     bot.label, percentage_within_owner_type DESC;
 -- Private academic institutions loved Plastic, rubber, or synthetic sheeting
 
+-- For wall construction 
 WITH WallConstructionMaterials AS (
     SELECT
         b.id AS building_id,
