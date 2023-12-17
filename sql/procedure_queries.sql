@@ -978,11 +978,18 @@ END //
 DELIMITER ;
 
 -- Question: What is the distribution of energy sources used in buildings across different census regions, and what is the percentage of each energy source within each census region?
-DELIMITER //
-
-CREATE PROCEDURE GetConsolidatedEnergySourceUsage()
+DROP FUNCTION IF EXISTS GetConsolidatedEnergySourceUsage;
+CREATE OR REPLACE FUNCTION GetConsolidatedEnergySourceUsage()
+RETURNS TABLE (
+    census_region VARCHAR,
+    fuel_source_name VARCHAR,
+    building_count BIGINT,
+    percentage NUMERIC
+)
+LANGUAGE plpgsql
+AS $$
 BEGIN
-    -- Energy Source Usage
+    RETURN QUERY
     WITH EnergySourceUsage AS (
         SELECT
             b.id AS building_id,
@@ -1010,6 +1017,11 @@ BEGIN
         eu.census_region, es.fuel_source
     ORDER BY
         eu.census_region, building_count DESC;
-END //
+END;
+$$;
 
-DELIMITER ;
+
+
+
+SELECT * FROM building_owner_type;
+
