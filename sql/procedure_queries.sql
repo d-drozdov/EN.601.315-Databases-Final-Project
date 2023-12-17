@@ -7,6 +7,7 @@
 
 -- Question: What is the average cost of roof and wall construction materials for buildings located in a selected region?
 -- Input is the desired census region (ex. West)
+DROP FUNCTION IF EXISTS get_avg_costs_for_census_region(VARCHAR(255));
 CREATE OR REPLACE FUNCTION get_avg_costs_for_census_region(pCensusRegion VARCHAR(255))
 RETURNS TABLE (
     avg_roof_cost numeric,
@@ -48,6 +49,7 @@ $$ LANGUAGE plpgsql;
 
 -- Question: How does the average annual electricity and natural gas consumption compare across different principal building activities and building owner types?
 -- Input is the principal building activity / industry
+DROP FUNCTION IF EXISTS get_avg_energy_consumption_for_industry(VARCHAR(255));
 CREATE OR REPLACE FUNCTION get_avg_energy_consumption_for_industry(pIndustry VARCHAR(255))
 RETURNS TABLE (
     avg_electricity_consumption numeric,
@@ -72,9 +74,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-
 -- Grouped by building owner type
--- Input is the building owner type
+DROP FUNCTION IF EXISTS get_avg_energy_consumption_for_owner_type(VARCHAR(255));
 CREATE OR REPLACE FUNCTION get_avg_energy_consumption_for_owner_type(pOwnerType VARCHAR(255))
 RETURNS TABLE (
     avg_electricity_consumption numeric,
@@ -102,6 +103,7 @@ $$ LANGUAGE plpgsql;
 
 -- Question: What is the average electricity and natural gas consumption for buildings that have undergone specific types of renovations (like HVAC equipment upgrade, insulation upgrade) compared to those that haven't?
 -- Input is whether one is querying for either comparisons involving HVAC Upgrade, Insulation Upgrade, or Fire Safety Upgrade
+DROP FUNCTION IF EXISTS get_avg_energy_consumption_for_renovation_options(BOOLEAN, BOOLEAN, BOOLEAN);
 CREATE OR REPLACE FUNCTION get_avg_energy_consumption_for_renovation_options(
     pHVACUpgrade BOOLEAN,
     pInsulationUpgrade BOOLEAN,
@@ -117,8 +119,8 @@ BEGIN
     RETURN QUERY
     SELECT
         CASE
-            WHEN r.building_id IS NOT NULL THEN 'With Renovation'
-            ELSE 'Without Renovation'
+            WHEN r.building_id IS NOT NULL THEN 'With Renovation'::VARCHAR(50)
+            ELSE 'Without Renovation'::VARCHAR(50)
         END AS renovation_status,
         AVG(aec.electricity_consumption_thous_btu) AS avg_electricity_consumption,
         AVG(aec.natural_gas_consumption_thous_btu) AS avg_natural_gas_consumption
@@ -140,7 +142,8 @@ $$ LANGUAGE plpgsql;
 
 -- Question: What is the average electricity consumption per square foot for buildings, categorized by their construction year range? Usage type?
 -- Query was broken into two parts, one for Construction Year Range, another for Usage Type
--- Input is the construction year category 
+-- Input is the construction year category
+DROP FUNCTION IF EXISTS get_avg_electricity_per_sqft_by_construction_year(INT);
 CREATE OR REPLACE FUNCTION get_avg_electricity_per_sqft_by_construction_year(
     pConstructionYearCategory INT
 )
@@ -153,15 +156,15 @@ BEGIN
     RETURN QUERY
     SELECT
         CASE
-            WHEN b.year_of_construction_category = 2 THEN 'Before 1946'
-            WHEN b.year_of_construction_category = 3 THEN '1946-1959'
-            WHEN b.year_of_construction_category = 4 THEN '1960-1969'
-            WHEN b.year_of_construction_category = 5 THEN '1970-1979'
-            WHEN b.year_of_construction_category = 6 THEN '1980-1989'
-            WHEN b.year_of_construction_category = 7 THEN '1990-1999'
-            WHEN b.year_of_construction_category = 8 THEN '2000-2012'
-            WHEN b.year_of_construction_category = 9 THEN '2013-2018'
-            ELSE 'Unknown'
+            WHEN b.year_of_construction_category = 2 THEN 'Before 1946'::VARCHAR(50)
+            WHEN b.year_of_construction_category = 3 THEN '1946-1959'::VARCHAR(50)
+            WHEN b.year_of_construction_category = 4 THEN '1960-1969'::VARCHAR(50)
+            WHEN b.year_of_construction_category = 5 THEN '1970-1979'::VARCHAR(50)
+            WHEN b.year_of_construction_category = 6 THEN '1980-1989'::VARCHAR(50)
+            WHEN b.year_of_construction_category = 7 THEN '1990-1999'::VARCHAR(50)
+            WHEN b.year_of_construction_category = 8 THEN '2000-2012'::VARCHAR(50)
+            WHEN b.year_of_construction_category = 9 THEN '2013-2018'::VARCHAR(50)
+            ELSE 'Unknown'::VARCHAR(50)
         END AS construction_year_range,
         AVG(aec.electricity_consumption_thous_btu / b.square_footage) AS avg_electricity_per_sqft
     FROM
@@ -176,6 +179,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Input is principal building activity
+DROP FUNCTION IF EXISTS get_avg_electricity_per_sqft_by_building_activity(VARCHAR(255));
 CREATE OR REPLACE FUNCTION get_avg_electricity_per_sqft_by_building_activity(
     pBuildingActivity VARCHAR(255)
 )
@@ -202,15 +206,16 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-
 -- Question: What is the average electricity, natural electricity expenditure, natural gas consumption, and natural gas expenditure for buildings that have escalators and elevators compared to those that don't?
-CREATE OR REPLACE FUNCTION GetAvgEnergyDataByAccesibility()
+-- Create or replace the function
+DROP FUNCTION IF EXISTS calculate_avg_energy_consumption();
+CREATE OR REPLACE FUNCTION calculate_avg_energy_consumption()
 RETURNS TABLE (
-    building_type VARCHAR(255),
-    avg_electricity_consumption numeric,
-    avg_natural_gas_consumption numeric,
-    avg_electricity_expenditure numeric,
-    avg_natural_gas_expenditure numeric
+    building_type TEXT,
+    avg_electricity_consumption NUMERIC,
+    avg_natural_gas_consumption NUMERIC,
+    avg_electricity_expenditure NUMERIC,
+    avg_natural_gas_expenditure NUMERIC
 )
 AS $$
 BEGIN
@@ -232,23 +237,24 @@ BEGIN
             annual_energy_consumption ae ON a.building_id = ae.building_id
     )
     SELECT
-        building_type,
-        AVG(electricity_consumption::numeric) AS avg_electricity_consumption,
-        AVG(natural_gas_consumption::numeric) AS avg_natural_gas_consumption,
-        AVG(electricity_expenditure::numeric) AS avg_electricity_expenditure,
-        AVG(natural_gas_expenditure::numeric) AS avg_natural_gas_expenditure
+        BuildingEnergy.building_type,
+        AVG(BuildingEnergy.electricity_consumption::numeric) AS avg_electricity_consumption,
+        AVG(BuildingEnergy.natural_gas_consumption::numeric) AS avg_natural_gas_consumption,
+        AVG(BuildingEnergy.electricity_expenditure::numeric) AS avg_electricity_expenditure,
+        AVG(BuildingEnergy.natural_gas_expenditure::numeric) AS avg_natural_gas_expenditure
     FROM
         BuildingEnergy
     GROUP BY
-        building_type;
+        BuildingEnergy.building_type;
 END;
 $$ LANGUAGE plpgsql;
 
 -- Question: Is there a correlation between the number of employees and electricity consumption in buildings?
+DROP FUNCTION IF EXISTS get_avg_electricity_consumption_by_employee_category();
 CREATE OR REPLACE FUNCTION get_avg_electricity_consumption_by_employee_category()
 RETURNS TABLE (
-    employee_category VARCHAR(255),
-    avg_electricity_consumption numeric
+    employee_category TEXT,
+    avg_electricity_consumption NUMERIC
 )
 AS $$
 BEGIN
@@ -271,68 +277,84 @@ BEGIN
             schedules s ON b.id = s.building_id
         LEFT JOIN
             annual_energy_consumption ae ON b.id = ae.building_id
-    )  
+    )
     SELECT
-        employee_category,
-        ROUND(AVG(electricity_consumption::numeric)) AS avg_electricity_consumption
+        BuildingEmployeeEnergy.employee_category,
+        ROUND(AVG(BuildingEmployeeEnergy.electricity_consumption::numeric)) AS avg_electricity_consumption
     FROM
         BuildingEmployeeEnergy
     GROUP BY
-        employee_category
+        BuildingEmployeeEnergy.employee_category
     ORDER BY
-        employee_category;
+        BuildingEmployeeEnergy.employee_category;
 END;
 $$ LANGUAGE plpgsql;
 
--- With the output, maybe try to calculate the correlation coefficient with scipy?
-
 -- Question: For buildings that receive significant daylight (>50% daylight shining on the building), how does their electricity consumption for lighting compare to those with less daylight?
-CREATE OR REPLACE FUNCTION get_avg_electricity_consumption_by_employee_category()
+DROP FUNCTION IF EXISTS calculate_daylight_statistics();
+CREATE OR REPLACE FUNCTION calculate_daylight_statistics()
 RETURNS TABLE (
-    employee_category VARCHAR(255),
-    avg_electricity_consumption numeric
+    daylight_category TEXT,
+    num_buildings BIGINT,
+    avg_electricity_consumption NUMERIC
 )
 AS $$
 BEGIN
     RETURN QUERY
-    WITH BuildingEmployeeEnergy AS (
+    WITH daylight_buildings AS (
         SELECT
             b.id AS building_id,
-            CASE
-                WHEN s.number_of_employees BETWEEN 0 AND 100 THEN '0-100'
-                WHEN s.number_of_employees BETWEEN 101 AND 1000 THEN '101-1000'
-                WHEN s.number_of_employees BETWEEN 1001 AND 5000 THEN '1001-5000'
-                WHEN s.number_of_employees BETWEEN 5001 AND 10000 THEN '5001-10000'
-                -- Add more categories as needed
-                ELSE 'Over 10000'
-            END AS employee_category,
-            ae.electricity_consumption_thous_btu AS electricity_consumption
+            li.percent_building_receiving_enough_daylight
         FROM
             buildings b
         LEFT JOIN
-            schedules s ON b.id = s.building_id
+            lighting_information li ON b.id = li.building_id
+        WHERE
+            li.percent_building_receiving_enough_daylight IS NOT NULL
+            AND li.percent_building_receiving_enough_daylight > 50
+    ),
+    no_daylight_buildings AS (
+        SELECT
+            b.id AS building_id,
+            li.percent_building_receiving_enough_daylight
+        FROM
+            buildings b
         LEFT JOIN
-            annual_energy_consumption ae ON b.id = ae.building_id
-    )  
+            lighting_information li ON b.id = li.building_id
+        WHERE
+            li.percent_building_receiving_enough_daylight IS NOT NULL
+            AND li.percent_building_receiving_enough_daylight <= 50
+    )
     SELECT
-        employee_category,
-        ROUND(AVG(electricity_consumption::numeric)) AS avg_electricity_consumption
+        'Daylight' AS daylight_category,
+        COUNT(*) AS num_buildings,
+        ROUND(AVG(ae.electricity_consumption_thous_btu)) AS avg_electricity_consumption
     FROM
-        BuildingEmployeeEnergy
-    GROUP BY
-        employee_category
-    ORDER BY
-        employee_category;
+        daylight_buildings db
+    LEFT JOIN
+        annual_energy_consumption ae ON db.building_id = ae.building_id
+
+    UNION
+
+    SELECT
+        'No Daylight' AS daylight_category,
+        COUNT(*) AS num_buildings,
+        ROUND(AVG(ae.electricity_consumption_thous_btu)) AS avg_electricity_consumption
+    FROM
+        no_daylight_buildings ndb
+    LEFT JOIN
+        annual_energy_consumption ae ON ndb.building_id = ae.building_id;
 END;
 $$ LANGUAGE plpgsql;
 
 -- Split up analysis to also look by census region
+DROP FUNCTION IF EXISTS get_daylight_buildings_statistics_by_region();
 CREATE OR REPLACE FUNCTION get_daylight_buildings_statistics_by_region()
 RETURNS TABLE (
-    daylight_category VARCHAR(255),
-    census_region VARCHAR(255),
-    num_buildings INT,
-    avg_electricity_consumption numeric
+    daylight_category TEXT,
+    census_region CHARACTER VARYING(255),
+    num_buildings BIGINT,
+    avg_electricity_consumption NUMERIC
 )
 AS $$
 BEGIN
@@ -396,14 +418,13 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- I think you can do a double bar plot here
-
 -- Question: Compare the energy consumption of buildings with different types of heating and cooling systems. Find heating and cooling efficiency (energy consumption per square foot) for each type of system.
 -- Analysis for Heating Systems
+DROP FUNCTION IF EXISTS get_avg_energy_consumption_by_heating_system();
 CREATE OR REPLACE FUNCTION get_avg_energy_consumption_by_heating_system()
 RETURNS TABLE (
     heating_system VARCHAR(255),
-    avg_energy_consumption_per_sqft numeric
+    avg_energy_consumption_per_sqft NUMERIC
 )
 AS $$
 BEGIN
@@ -423,27 +444,28 @@ BEGIN
         LEFT JOIN
             annual_energy_consumption ae ON b.id = ae.building_id
     )
-    
+
     SELECT
-        heating_system,
-        ROUND(AVG(electricity_consumption / square_footage), 2) AS avg_energy_consumption_per_sqft
+        HeatingSystems.heating_system,
+        ROUND(AVG(HeatingSystems.electricity_consumption / HeatingSystems.square_footage), 2) AS avg_energy_consumption_per_sqft
     FROM
         HeatingSystems
     WHERE
-        electricity_consumption IS NOT NULL
-        AND square_footage IS NOT NULL
+        HeatingSystems.electricity_consumption IS NOT NULL
+        AND HeatingSystems.square_footage IS NOT NULL
     GROUP BY
-        heating_system
+        HeatingSystems.heating_system
     ORDER BY
         avg_energy_consumption_per_sqft;
 END;
 $$ LANGUAGE plpgsql;
 
 -- Analysis for Cooling Systems
+DROP FUNCTION IF EXISTS get_avg_energy_consumption_by_cooling_system();
 CREATE OR REPLACE FUNCTION get_avg_energy_consumption_by_cooling_system()
 RETURNS TABLE (
     cooling_system VARCHAR(255),
-    avg_energy_consumption_per_sqft numeric
+    avg_energy_consumption_per_sqft NUMERIC
 )
 AS $$
 BEGIN
@@ -464,28 +486,28 @@ BEGIN
             annual_energy_consumption ae ON b.id = ae.building_id
     )
     SELECT
-        cooling_system,
-        ROUND(AVG(electricity_consumption / square_footage), 2) AS avg_energy_consumption_per_sqft
+        CoolingSystems.cooling_system,
+        ROUND(AVG(CoolingSystems.electricity_consumption / CoolingSystems.square_footage), 2) AS avg_energy_consumption_per_sqft
     FROM
         CoolingSystems
     WHERE
-        electricity_consumption IS NOT NULL
-        AND square_footage IS NOT NULL
+        CoolingSystems.electricity_consumption IS NOT NULL
+        AND CoolingSystems.square_footage IS NOT NULL
     GROUP BY
-        cooling_system
+        CoolingSystems.cooling_system
     ORDER BY
         avg_energy_consumption_per_sqft;
 END;
 $$ LANGUAGE plpgsql;
-
 -- Air conditioning equipment dominated at 313.75, while the next highest of fuel oil/diesel/kerosene chiller was 61
 
 -- Question: What are the most common fuel types used for water heating in buildings across different census regions?
+DROP FUNCTION IF EXISTS get_water_heating_system_statistics();
 CREATE OR REPLACE FUNCTION get_water_heating_system_statistics()
 RETURNS TABLE (
     census_region VARCHAR(255),
-    water_heating_system VARCHAR(255),
-    num_buildings INT
+    water_heating_system TEXT,
+    num_buildings BIGINT
 )
 AS $$
 BEGIN
@@ -515,30 +537,31 @@ BEGIN
             census_regions cr ON b.census_region = cr.id
     )
     SELECT
-        census_region,
-        water_heating_system,
-        COUNT(building_id) AS num_buildings
+        WaterHeatingSystems.census_region,
+        WaterHeatingSystems.water_heating_system,
+        COUNT(WaterHeatingSystems.building_id) AS num_buildings
     FROM
         WaterHeatingSystems
     WHERE
-        water_heating_system IS NOT NULL
+        WaterHeatingSystems.water_heating_system IS NOT NULL
     GROUP BY
-        census_region,
-        water_heating_system
+        WaterHeatingSystems.census_region,
+        WaterHeatingSystems.water_heating_system
     ORDER BY
-        census_region,
+        WaterHeatingSystems.census_region,
         num_buildings DESC;
 END;
 $$ LANGUAGE plpgsql;
 
 -- Question: Analyze how different window types (e.g., tinted, reflective) affect heating and cooling energy consumption.
+DROP FUNCTION IF EXISTS get_window_energy_consumption_statistics();
 CREATE OR REPLACE FUNCTION get_window_energy_consumption_statistics()
 RETURNS TABLE (
     window_type VARCHAR(255),
     has_tinted_windows BOOLEAN,
     has_reflective_windows BOOLEAN,
-    avg_electricity_consumption numeric,
-    avg_natural_gas_consumption numeric
+    avg_electricity_consumption NUMERIC,
+    avg_natural_gas_consumption NUMERIC
 )
 AS $$
 BEGIN
@@ -561,24 +584,23 @@ BEGIN
             annual_energy_consumption ae ON b.id = ae.building_id
     )
     SELECT
-        window_type,
-        has_tinted_windows,
-        has_reflective_windows,
-        AVG(electricity_consumption) AS avg_electricity_consumption,
-        AVG(natural_gas_consumption) AS avg_natural_gas_consumption
+        WindowEnergyConsumption.window_type,
+        WindowEnergyConsumption.has_tinted_windows,
+        WindowEnergyConsumption.has_reflective_windows,
+        AVG(WindowEnergyConsumption.electricity_consumption) AS avg_electricity_consumption,
+        AVG(WindowEnergyConsumption.natural_gas_consumption) AS avg_natural_gas_consumption
     FROM
         WindowEnergyConsumption
     WHERE
-        window_type IS NOT NULL
+        WindowEnergyConsumption.window_type IS NOT NULL
     GROUP BY
-        window_type,
-        has_tinted_windows,
-        has_reflective_windows
+        WindowEnergyConsumption.window_type,
+        WindowEnergyConsumption.has_tinted_windows,
+        WindowEnergyConsumption.has_reflective_windows
     ORDER BY
-        window_type;
+        WindowEnergyConsumption.window_type;
 END;
 $$ LANGUAGE plpgsql;
-
 
 -- Question: Evaluate the impact of various lighting technologies (LED, fluorescent, etc.) on a building's electricity consumption.
 -- Buildings that utilized a certain lighting technology more than 50% of the time were categorized into using that lighting techology
@@ -627,13 +649,14 @@ $$ LANGUAGE plpgsql;
 
 -- Question: How does energy consumption (electricity, natural gas) vary with the size of the building (square footage)? Does efficiency increase or decrease with building size?
 -- Buildings were categorized into 8 categories based on square footage
+DROP FUNCTION IF EXISTS get_building_size_energy_consumption();
 CREATE OR REPLACE FUNCTION get_building_size_energy_consumption()
 RETURNS TABLE (
-    square_footage_category VARCHAR(255),
-    avg_electricity_consumption numeric,
-    avg_electricity_per_sqft numeric,
-    avg_natural_gas_consumption numeric,
-    avg_natural_gas_per_sqft numeric
+    square_footage_category TEXT,
+    avg_electricity_consumption NUMERIC,
+    avg_electricity_per_sqft NUMERIC,
+    avg_natural_gas_consumption NUMERIC,
+    avg_natural_gas_per_sqft NUMERIC
 )
 AS $$
 BEGIN
@@ -661,17 +684,17 @@ BEGIN
             annual_energy_consumption ae ON b.id = ae.building_id
     )
     SELECT
-        square_footage_category,
-        AVG(electricity_consumption) AS avg_electricity_consumption,
-        AVG(electricity_consumption) / SUM(square_footage) AS avg_electricity_per_sqft,
-        AVG(natural_gas_consumption) AS avg_natural_gas_consumption,
-        AVG(natural_gas_consumption) / SUM(square_footage) AS avg_natural_gas_per_sqft
+        BuildingSizeEnergyConsumption.square_footage_category,
+        AVG(BuildingSizeEnergyConsumption.electricity_consumption) AS avg_electricity_consumption,
+        AVG(BuildingSizeEnergyConsumption.electricity_consumption) / SUM(BuildingSizeEnergyConsumption.square_footage) AS avg_electricity_per_sqft,
+        AVG(BuildingSizeEnergyConsumption.natural_gas_consumption) AS avg_natural_gas_consumption,
+        AVG(BuildingSizeEnergyConsumption.natural_gas_consumption) / SUM(BuildingSizeEnergyConsumption.square_footage) AS avg_natural_gas_per_sqft
     FROM
         BuildingSizeEnergyConsumption
     WHERE
-        square_footage_category != 'Other'
+        BuildingSizeEnergyConsumption.square_footage_category != 'Other'
     GROUP BY
-        square_footage_category
+        BuildingSizeEnergyConsumption.square_footage_category
     ORDER BY
         avg_electricity_consumption DESC;
 END;
@@ -680,11 +703,12 @@ $$ LANGUAGE plpgsql;
 -- Question: Does the year of construction affect the materials chosen for either roofs or walls?
 -- Query was split into two parts, one for Roof Construction materials, one for Walls Construction materials
 -- For Roof Construction
+DROP FUNCTION IF EXISTS get_roof_construction_statistics_by_construction_year();
 CREATE OR REPLACE FUNCTION get_roof_construction_statistics_by_construction_year()
 RETURNS TABLE (
-    construction_year_range VARCHAR(255),
+    construction_year_range TEXT,
     roof_material VARCHAR(255),
-    building_count INT,
+    building_count BIGINT,
     percentage NUMERIC
 )
 AS $$
@@ -711,25 +735,26 @@ BEGIN
             roof_construction_materials rcmt ON b.roof_construction_material_id = rcmt.id
     )
     SELECT
-        construction_year_range,
-        roof_material,
-        COUNT(building_id) AS building_count,
-        (COUNT(building_id) * 100.0 / SUM(COUNT(building_id)) OVER (PARTITION BY construction_year_range)) AS percentage
+        RoofConstruction.construction_year_range,
+        RoofConstruction.roof_material,
+        COUNT(RoofConstruction.building_id) AS building_count,
+        (COUNT(RoofConstruction.building_id) * 100.0 / SUM(COUNT(RoofConstruction.building_id)) OVER (PARTITION BY RoofConstruction.construction_year_range)) AS percentage
     FROM
         RoofConstruction
     GROUP BY
-        construction_year_range, roof_material
+        RoofConstruction.construction_year_range, RoofConstruction.roof_material
     ORDER BY
-        construction_year_range, building_count DESC;
+        RoofConstruction.construction_year_range, building_count DESC;
 END;
 $$ LANGUAGE plpgsql;
 
 -- For Wall Construction
+DROP FUNCTION IF EXISTS get_wall_construction_statistics_by_construction_year();
 CREATE OR REPLACE FUNCTION get_wall_construction_statistics_by_construction_year()
 RETURNS TABLE (
-    construction_year_range VARCHAR(255),
+    construction_year_range TEXT,
     wall_material VARCHAR(255),
-    building_count INT,
+    building_count BIGINT,
     percentage NUMERIC
 )
 AS $$
@@ -756,27 +781,28 @@ BEGIN
             wall_construction_materials wcm ON b.wall_construction_material_id = wcm.id
     )
     SELECT
-        construction_year_range,
-        wall_material,
-        COUNT(building_id) AS building_count,
-        (COUNT(building_id) * 100.0 / SUM(COUNT(building_id)) OVER (PARTITION BY construction_year_range)) AS percentage
+        WallConstruction.construction_year_range,
+        WallConstruction.wall_material,
+        COUNT(WallConstruction.building_id) AS building_count,
+        (COUNT(WallConstruction.building_id) * 100.0 / SUM(COUNT(WallConstruction.building_id)) OVER (PARTITION BY WallConstruction.construction_year_range)) AS percentage
     FROM
         WallConstruction
     GROUP BY
-        construction_year_range, wall_material
+        WallConstruction.construction_year_range, WallConstruction.wall_material
     ORDER BY
-        construction_year_range, building_count DESC;
+        WallConstruction.construction_year_range, building_count DESC;
 END;
 $$ LANGUAGE plpgsql;
 
 -- Question: What are the most common types of air conditioning and heating systems used in buildings, and how do they correlate with building size and complex type?
 -- Query was broken up into two parts, one for air conditioning, another for heating systems
 -- For Air Conditioning Information
+DROP FUNCTION IF EXISTS get_air_conditioning_statistics();
 CREATE OR REPLACE FUNCTION get_air_conditioning_statistics()
 RETURNS TABLE (
     complex_type VARCHAR(255),
     air_conditioning_type VARCHAR(255),
-    building_count INT,
+    building_count BIGINT,
     percentage_within_complex NUMERIC,
     avg_building_size NUMERIC
 )
@@ -802,26 +828,27 @@ BEGIN
             ct.label IS NOT NULL
     )
     SELECT
-        complex_type,
-        air_conditioning_type,
-        COUNT(building_id) AS building_count,
-        (COUNT(building_id) * 100.0 / SUM(COUNT(building_id)) OVER (PARTITION BY complex_type)) AS percentage_within_complex,
-        AVG(square_footage) AS avg_building_size
+        AirConditioningInformation.complex_type,
+        AirConditioningInformation.air_conditioning_type,
+        COUNT(AirConditioningInformation.building_id) AS building_count,
+        (COUNT(AirConditioningInformation.building_id) * 100.0 / SUM(COUNT(AirConditioningInformation.building_id)) OVER (PARTITION BY AirConditioningInformation.complex_type)) AS percentage_within_complex,
+        AVG(AirConditioningInformation.square_footage) AS avg_building_size
     FROM
         AirConditioningInformation
     GROUP BY
-        complex_type, air_conditioning_type
+        AirConditioningInformation.complex_type, AirConditioningInformation.air_conditioning_type
     ORDER BY
-        complex_type, building_count DESC;
+        AirConditioningInformation.complex_type, building_count DESC;
 END;
 $$ LANGUAGE plpgsql;
 
 -- For Heating Information
+DROP FUNCTION IF EXISTS get_heating_statistics();
 CREATE OR REPLACE FUNCTION get_heating_statistics()
 RETURNS TABLE (
     complex_type VARCHAR(255),
     heating_type VARCHAR(255),
-    building_count INT,
+    building_count BIGINT,
     percentage_within_complex NUMERIC,
     avg_building_size NUMERIC
 )
@@ -847,23 +874,24 @@ BEGIN
             ct.label IS NOT NULL
     )
     SELECT
-        complex_type,
-        heating_type,
-        COUNT(building_id) AS building_count,
-        (COUNT(building_id) * 100.0 / SUM(COUNT(building_id)) OVER (PARTITION BY complex_type)) AS percentage_within_complex,
-        AVG(square_footage) AS avg_building_size
+        HeatingInformation.complex_type,
+        HeatingInformation.heating_type,
+        COUNT(HeatingInformation.building_id) AS building_count,
+        (COUNT(HeatingInformation.building_id) * 100.0 / SUM(COUNT(HeatingInformation.building_id)) OVER (PARTITION BY HeatingInformation.complex_type)) AS percentage_within_complex,
+        AVG(HeatingInformation.square_footage) AS avg_building_size
     FROM
         HeatingInformation
     GROUP BY
-        complex_type, heating_type
+        HeatingInformation.complex_type, HeatingInformation.heating_type
     ORDER BY
-        complex_type, building_count DESC;
+        HeatingInformation.complex_type, building_count DESC;
 END;
 $$ LANGUAGE plpgsql;
 
 -- Question: What are the most common roof and wall construction materials used in buildings owned by different types of entities (e.g., private, government, non-profit)?
 -- Query was broken up into two parts, one for roof, another for wall
 -- For Roof Construction
+DROP FUNCTION IF EXISTS get_roof_construction_material_statistics_by_owner_type();
 CREATE OR REPLACE FUNCTION get_roof_construction_material_statistics_by_owner_type()
 RETURNS TABLE (
     owner_type VARCHAR(255),
@@ -885,25 +913,26 @@ BEGIN
     )
     SELECT
         bot.label AS owner_type,
-        roof_material,
-        (COUNT(building_id) * 100.0 / SUM(COUNT(building_id)) OVER (PARTITION BY bot.label)) AS percentage_within_owner_type
+        rcm.roof_material,
+        (COUNT(rcm.building_id) * 100.0 / SUM(COUNT(rcm.building_id)) OVER (PARTITION BY bot.label)) AS percentage_within_owner_type
     FROM
         RoofConstructionMaterials rcm
     JOIN
         building_owner_type bot ON rcm.building_owner_type = bot.id
     GROUP BY
-        bot.label, roof_material
+        bot.label, rcm.roof_material
     ORDER BY
         bot.label, percentage_within_owner_type DESC;
 END;
 $$ LANGUAGE plpgsql;
 
--- For wall construction 
+-- For wall construction
+DROP FUNCTION IF EXISTS get_wall_construction_material_statistics_by_owner_type();
 CREATE OR REPLACE FUNCTION get_wall_construction_material_statistics_by_owner_type()
 RETURNS TABLE (
     owner_type VARCHAR(255),
     wall_material VARCHAR(255),
-    building_count INT,
+    building_count BIGINT,
     percentage_within_owner_type NUMERIC
 )
 AS $$
@@ -921,24 +950,25 @@ BEGIN
     )
     SELECT
         bot.label AS owner_type,
-        wall_material,
-        COUNT(building_id) AS building_count,
-        (COUNT(building_id) * 100.0 / SUM(COUNT(building_id)) OVER (PARTITION BY bot.label)) AS percentage_within_owner_type
+        wcm.wall_material,
+        COUNT(wcm.building_id) AS building_count,
+        (COUNT(wcm.building_id) * 100.0 / SUM(COUNT(wcm.building_id)) OVER (PARTITION BY bot.label)) AS percentage_within_owner_type
     FROM
         WallConstructionMaterials wcm
     JOIN
         building_owner_type bot ON wcm.building_owner_type = bot.id
     GROUP BY
-        bot.label, wall_material
+        bot.label, wcm.wall_material
     ORDER BY
         bot.label, percentage_within_owner_type DESC;
 END;
 $$ LANGUAGE plpgsql;
 
 -- Question: In buildings with food service facilities, how does the usage of natural gas and electricity vary compared to buildings without such facilities?
+DROP FUNCTION IF EXISTS get_energy_consumption_for_food_service();
 CREATE OR REPLACE FUNCTION get_energy_consumption_for_food_service()
 RETURNS TABLE (
-    facility_type VARCHAR(255),
+    facility_type TEXT,
     avg_electricity_consumption NUMERIC,
     avg_natural_gas_consumption NUMERIC
 )
@@ -962,17 +992,18 @@ BEGIN
             b.principal_building_activity IN (4, 5) -- Assuming 4 represents buildings with food service facilities
     )
     SELECT
-        facility_type,
-        AVG(electricity_consumption) AS avg_electricity_consumption,
-        AVG(natural_gas_consumption) AS avg_natural_gas_consumption
+        EnergyConsumption.facility_type,
+        AVG(EnergyConsumption.electricity_consumption) AS avg_electricity_consumption,
+        AVG(EnergyConsumption.natural_gas_consumption) AS avg_natural_gas_consumption
     FROM
         EnergyConsumption
     GROUP BY
-        facility_type;
+        EnergyConsumption.facility_type;
 END;
 $$ LANGUAGE plpgsql;
 
 -- Question: What is the average carbon output for different principal building activities across all fuel sources?
+DROP FUNCTION IF EXISTS get_avg_carbon_output_by_building_activity();
 CREATE OR REPLACE FUNCTION get_avg_carbon_output_by_building_activity()
 RETURNS TABLE (
     building_activity VARCHAR(255),
@@ -997,21 +1028,22 @@ BEGIN
             principal_building_activity pba ON b.principal_building_activity = pba.id
     )
     SELECT
-        building_activity,
-        AVG(average_carbon_output) AS avg_carbon_output
+        CarbonByBuildingActivity.building_activity,
+        AVG(CarbonByBuildingActivity.average_carbon_output) AS avg_carbon_output
     FROM
         CarbonByBuildingActivity
     GROUP BY
-        building_activity
+        CarbonByBuildingActivity.building_activity
     ORDER BY
         avg_carbon_output DESC;
 END;
 $$ LANGUAGE plpgsql;
 
 -- Question: What is the average carbon output for buildings with elevators, buildings with escalators, buildings with both, and buildings with neither?
+DROP FUNCTION IF EXISTS get_avg_carbon_output_by_accessibility_modes();
 CREATE OR REPLACE FUNCTION get_avg_carbon_output_by_accessibility_modes()
 RETURNS TABLE (
-    accessibility_category VARCHAR(255),
+    accessibility_category TEXT,
     avg_carbon_output NUMERIC
 )
 AS $$
@@ -1035,12 +1067,12 @@ BEGIN
     )
     SELECT
         CASE
-            WHEN number_of_elevators IS NOT NULL AND number_of_escalators IS NOT NULL THEN 'Buildings with Both'
-            WHEN number_of_elevators IS NOT NULL THEN 'Buildings with Elevators'
-            WHEN number_of_escalators IS NOT NULL THEN 'Buildings with Escalators'
+            WHEN CarbonByAccessibilityModes.number_of_elevators IS NOT NULL AND CarbonByAccessibilityModes.number_of_escalators IS NOT NULL THEN 'Buildings with Both'
+            WHEN CarbonByAccessibilityModes.number_of_elevators IS NOT NULL THEN 'Buildings with Elevators'
+            WHEN CarbonByAccessibilityModes.number_of_escalators IS NOT NULL THEN 'Buildings with Escalators'
             ELSE 'Buildings with Neither'
         END AS accessibility_category,
-        AVG(average_carbon_output) AS avg_carbon_output
+        AVG(CarbonByAccessibilityModes.average_carbon_output) AS avg_carbon_output
     FROM
         CarbonByAccessibilityModes
     GROUP BY
@@ -1050,13 +1082,13 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-
 -- Question: What is the distribution of energy sources used in buildings across different census regions, and what is the percentage of each energy source within each census region?
+DROP FUNCTION IF EXISTS get_consolidated_energy_source_usage();
 CREATE OR REPLACE FUNCTION get_consolidated_energy_source_usage()
 RETURNS TABLE (
     census_region VARCHAR(255),
     fuel_source_name VARCHAR(255),
-    building_count INT,
+    building_count BIGINT,
     percentage NUMERIC
 )
 AS $$
@@ -1090,3 +1122,4 @@ BEGIN
     ORDER BY
         eu.census_region, building_count DESC;
 END;
+$$ LANGUAGE plpgsql;
