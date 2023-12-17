@@ -139,7 +139,7 @@ CREATE TABLE schedules (
 );
 
 -- Define energy_sources table
-DROP TABLE IF EXISTS energy_sources CASCADE
+DROP TABLE IF EXISTS energy_sources CASCADE;
 CREATE TABLE energy_sources (
     id SERIAL PRIMARY KEY,
     fuel_source VARCHAR(255),
