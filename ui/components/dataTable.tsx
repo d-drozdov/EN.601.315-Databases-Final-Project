@@ -1,6 +1,6 @@
 import { IconChevronDown, IconChevronUp } from "@tabler/icons-react";
 import React from "react";
-import { Column, useTable, useSortBy } from "react-table";
+import { Column, useTable, useSortBy, HeaderGroup } from "react-table";
 
 type Props<T extends object> = {
   fields: string[];
@@ -32,12 +32,15 @@ const DataTable = <T extends object>({ fields, rowData }: Props<T>) => {
               >
                 {headerGroup.headers.map((column) => (
                   <th
-                    {...column.getHeaderProps(column.getSortByToggleProps())}
+                    // @ts-ignore
+                    {...column.getHeaderProps(column.getSortByToggleProps)}
                     className="py-3 px-6"
                   >
                     <div className="flex items-center justify-center">
                       <span>{column.render("Header")}</span>
+                      {/* @ts-ignore */}
                       {column.isSorted ? (
+                        // @ts-ignore
                         column.isSortedDesc ? (
                           <IconChevronUp size={15} />
                         ) : (
