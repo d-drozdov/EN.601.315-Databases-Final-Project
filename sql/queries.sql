@@ -23,7 +23,7 @@ GROUP BY
 -- Output shows avg_roof_cost and avg_wall_cost to be nearly identical across all 4 regions
 -- The finding might reflect adherence to common building regulations or standards across the U.S., leading to uniformity in construction material choices and costs.
 
--- Question: How does the average annual electricity and natural gas consumption compare across different principal building activities and building owner types?
+-- Question: How does the average annual electricity and natural gas consumption compare across different principal building activities and building owner types? //VISUAL- V1: A bar chart with two bars per category. One for electricity, one for natural gas
 -- Query was broken into two parts, one for principal building activity, another for building owner type
 -- Query is grouped by principal building activity
 WITH BuildingEnergy AS (
@@ -74,7 +74,7 @@ ORDER BY
 -- I'm not sure what buildings could be trying to hide with their principal building activity and why their electricity and natural gas consumption
 -- is so high.
 
--- Question: What is the average electricity and natural gas consumption for buildings that have undergone specific types of renovations (like HVAC equipment upgrade, insulation upgrade) compared to those that haven't?
+-- Question: What is the average electricity and natural gas consumption for buildings that have undergone specific types of renovations (like HVAC equipment upgrade, insulation upgrade) compared to those that haven't? //VISUAL V2: Two simple bar charts comparing with and without HVAC
 -- Query was broken into three parts, one for HVAC Upgrade, one for Insulation Upgrade, and another for Fire Safety Upgrade
 -- Average consumption for buildings with HVAC equipment upgrade
 SELECT
@@ -128,7 +128,7 @@ GROUP BY
 -- Average Electricity Consumption for buildings with Fire Safety upgrade was nearly three that of buildings without Fire Safety upgrade
 -- Average Natural Gas Consumption for buildings with Fire Safety upgrade was nearly three times that of buildings without Fire Safety upgrade
 
--- Question: What is the average electricity consumption per square foot for buildings, categorized by their construction year range? Usage type?
+-- Question: What is the average electricity consumption per square foot for buildings, categorized by their construction year range? Usage type? //VISUAL: V3 bar chart with avg_elericity as the bars
 -- Query was broken into two parts, one for Construction Year Range, another for Usage Type
 -- Average electricity consumption per square foot by construction year range
 SELECT
@@ -228,7 +228,7 @@ ORDER BY
     employee_category;
 -- With the output, maybe try to calculate the correlation coefficient with scipy?
 
--- Question: For buildings that receive significant daylight (>50% daylight shining on the building), how does their electricity consumption for lighting compare to those with less daylight?
+-- Question: For buildings that receive significant daylight (>50% daylight shining on the building), how does their electricity consumption for lighting compare to those with less daylight? //VISUAL V4: Bar chart of daylight vs no daylight. Ignore num_buildings, and only show avg_electricity_consumption
 WITH DaylightBuildings AS (
     SELECT
         b.id AS building_id,
@@ -394,7 +394,7 @@ ORDER BY
     avg_energy_consumption_per_sqft;
 -- Air conditioning equipment dominated at 313.75, while the next highest of fuel oil/diesel/kerosene chiller was 61
 
--- Question: What are the most common fuel types used for water heating in buildings across different census regions?
+-- Question: What are the most common fuel types used for water heating in buildings across different census regions? //VISUAL V5: Pie chart per region.
 WITH WaterHeatingSystems AS (
     SELECT
         b.id AS building_id,
@@ -626,7 +626,7 @@ ORDER BY
     construction_year_range, building_count DESC;
 -- Brick, stone, or stucco dominated "Before 1946" at 72%, but then decreased to "2013-2018" to be 41%
 
--- Question: What are the most common types of air conditioning and heating systems used in buildings, and how do they correlate with building size and complex type?
+-- Question: What are the most common types of air conditioning and heating systems used in buildings, and how do they correlate with building size and complex type? //VISUAL V6: Pie chart per complex_type, just like V5
 -- Query was broken up into two parts, one for air conditioning, another for heating systems
 -- For Air Conditioning Information
 WITH AirConditioningInformation AS (
@@ -747,7 +747,7 @@ GROUP BY
 ORDER BY
     bot.label, percentage_within_owner_type DESC;
 
--- Question: In buildings with food service facilities, how does the usage of natural gas and electricity vary compared to buildings without such facilities?
+-- Question: In buildings with food service facilities, how does the usage of natural gas and electricity vary compared to buildings without such facilities? //VISUAL: A bar chart for electricity consumption, and one for natural_gas consumption. Just like V2
 WITH EnergyConsumption AS (
     SELECT
         b.id AS building_id,
