@@ -228,7 +228,7 @@ ORDER BY
     employee_category;
 -- With the output, maybe try to calculate the correlation coefficient with scipy?
 
--- Question: For buildings that receive significant daylight (>50% daylight shining on the building), how does their electricity consumption for lighting compare to those with less daylight? //VISUAL V4: Bar chart of daylight vs no daylight. Ignore num_buildings, and only show avg_electricity_consumption
+-- Question: For buildings that receive significant daylight (>50% daylight shining on the building), how does their electricity consumption for lighting compare to those with less daylight? //VISUAL V4: Bar chart of daylight vs no daylight. Ignore num_buildings, and only show avg_electricity_consumption. Similar to V2
 WITH DaylightBuildings AS (
     SELECT
         b.id AS building_id,
