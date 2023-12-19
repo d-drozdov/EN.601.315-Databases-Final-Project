@@ -7,7 +7,7 @@
 
 -- Question: What is the average cost of roof and wall construction materials for buildings located in each census region?
 SELECT
-    cr.label AS census_region,
+cr.label AS census_region,
     AVG(rcm.average_cost) AS avg_roof_cost,
     AVG(wcm.average_cost) AS avg_wall_cost
 FROM
@@ -801,7 +801,7 @@ ORDER BY
     avg_carbon_output DESC;
 -- Vacant buildings surprisingly have the highest average carbon output
 
--- Question: What is the average carbon output for buildings with elevators, buildings with escalators, buildings with both, and buildings with neither?
+-- Question: What is the average carbon output for buildings with elevators, buildings with escalators, buildings with both, and buildings with neither? //VISUAL: bar chart, with energy consumption for a certain building type per bar
 WITH CarbonByAccessibilityModes AS (
     SELECT
         b.id AS building_id,
@@ -834,7 +834,7 @@ ORDER BY
     avg_carbon_output DESC;
 -- Buildings with escalators actually had the lowest carbon output, even lower than buildings without either elevators or escalators
 
--- Question: "What is the distribution of energy sources used in buildings across different census regions, and what is the percentage of each energy source within each census region?"
+-- Question: "What is the distribution of energy sources used in buildings across different census regions, and what is the percentage of each energy source within each census region?" //VISUAL series of pie charts. Each pie chart represents a geographic area, and within the pie chart is the distribution of energy sources
 WITH EnergySourceUsage AS (
     SELECT
         b.id AS building_id,
