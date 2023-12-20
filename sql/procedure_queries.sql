@@ -11,18 +11,16 @@ DROP FUNCTION IF EXISTS get_avg_costs_for_census_region();
 CREATE OR REPLACE FUNCTION get_avg_costs_for_census_region()
 RETURNS TABLE (
     census_region varchar(255),
-    avg_roof_cost numeric,
-    avg_wall_cost numeric
+    avg_roof_cost_in_USD_per_sqft numeric,
+    avg_wall_cost_in_USD_per_sqft numeric
 )
 AS $$
-DECLARE
-
 BEGIN
         RETURN QUERY
         SELECT
             cr.label as census_region,
-            AVG(rcm.average_cost) AS avg_roof_cost,
-            AVG(wcm.average_cost) AS avg_wall_cost
+            ROUND(AVG(rcm.average_cost),2) AS avg_roof_cost_in_USD_per_sqft,
+            ROUND(AVG(wcm.average_cost),2) AS avg_wall_cost_in_USD_per_sqft
         FROM
             buildings b
         JOIN
@@ -43,16 +41,16 @@ DROP FUNCTION IF EXISTS get_avg_energy_consumption_for_industry();
 CREATE OR REPLACE FUNCTION get_avg_energy_consumption_for_industry()
 RETURNS TABLE (
     building_activity varchar(255),
-    avg_electricity_consumption numeric,
-    avg_natural_gas_consumption numeric
+    avg_electricity_consumption_in_thous_btu numeric,
+    avg_natural_gas_consumption_in_thous_btu numeric
 )
 AS $$
 BEGIN
     RETURN QUERY
     SELECT
         p.label as building_activity,
-        AVG(ae.electricity_consumption_thous_btu::numeric) AS avg_electricity_consumption,
-        AVG(ae.natural_gas_consumption_thous_btu::numeric) AS avg_natural_gas_consumption
+        ROUND(AVG(ae.electricity_consumption_thous_btu::numeric),2) AS avg_electricity_consumption_in_thous_btu,
+        ROUND(AVG(ae.natural_gas_consumption_thous_btu::numeric),2) AS avg_natural_gas_consumption_in_thous_btu
     FROM
         buildings b
     JOIN
@@ -70,16 +68,16 @@ DROP FUNCTION IF EXISTS get_avg_energy_consumption_for_owner_type();
 CREATE OR REPLACE FUNCTION get_avg_energy_consumption_for_owner_type()
 RETURNS TABLE (
     owner_type  varchar(255),
-    avg_electricity_consumption numeric,
-    avg_natural_gas_consumption numeric
+    avg_electricity_consumption_in_thous_btu numeric,
+    avg_natural_gas_consumption_in_thous_btu numeric
 )
 AS $$
 BEGIN
     RETURN QUERY
     SELECT
         bot.label as owner_type,
-        AVG(aec.electricity_consumption_thous_btu) AS avg_electricity_consumption,
-        AVG(aec.natural_gas_consumption_thous_btu) AS avg_natural_gas_consumption
+        ROUND(AVG(aec.electricity_consumption_thous_btu),2) AS avg_electricity_consumption_in_thous_btu,
+        ROUND(AVG(aec.natural_gas_consumption_thous_btu),2) AS avg_natural_gas_consumption_in_thous_btu
     FROM
         buildings b
     JOIN
@@ -142,7 +140,7 @@ DROP FUNCTION IF EXISTS get_avg_electricity_per_sqft_by_construction_year();
 CREATE OR REPLACE FUNCTION get_avg_electricity_per_sqft_by_construction_year()
 RETURNS TABLE (
     construction_year_range VARCHAR(50),
-    avg_electricity_per_sqft numeric
+    avg_electricity_in_thous_per_sqft numeric
 )
 AS $$
 BEGIN
@@ -159,7 +157,7 @@ BEGIN
             WHEN b.year_of_construction_category = 9 THEN '2013-2018'::VARCHAR(50)
             ELSE 'Unknown'::VARCHAR(50)
         END AS construction_year_range,
-        AVG(aec.electricity_consumption_thous_btu / b.square_footage) AS avg_electricity_per_sqft
+        ROUND(AVG(aec.electricity_consumption_thous_btu / b.square_footage),2) AS avg_electricity_in_thous_per_sqft
     FROM
         buildings b
     JOIN
@@ -175,14 +173,14 @@ DROP FUNCTION IF EXISTS get_avg_electricity_per_sqft_by_building_activity();
 CREATE OR REPLACE FUNCTION get_avg_electricity_per_sqft_by_building_activity()
 RETURNS TABLE (
     principal_building_activity VARCHAR(255),
-    avg_electricity_per_sqft numeric
+    avg_electricity_in_thous_per_sqft numeric
 )
 AS $$
 BEGIN
     RETURN QUERY
     SELECT
         pb.label AS principal_building_activity,
-        AVG(aec.electricity_consumption_thous_btu / b.square_footage) AS avg_electricity_per_sqft
+        ROUND(AVG(aec.electricity_consumption_thous_btu / b.square_footage),2) AS avg_electricity_in_thous_per_sqft
     FROM
         buildings b
     JOIN
@@ -200,10 +198,10 @@ DROP FUNCTION IF EXISTS calculate_avg_energy_consumption();
 CREATE OR REPLACE FUNCTION calculate_avg_energy_consumption()
 RETURNS TABLE (
     building_type TEXT,
-    avg_electricity_consumption NUMERIC,
-    avg_natural_gas_consumption NUMERIC,
-    avg_electricity_expenditure NUMERIC,
-    avg_natural_gas_expenditure NUMERIC
+    avg_electricity_consumption_in_thous NUMERIC,
+    avg_natural_gas_consumption_in_thous NUMERIC,
+    avg_electricity_expenditure_in_USD NUMERIC,
+    avg_natural_gas_expenditure_in_USD NUMERIC
 )
 AS $$
 BEGIN
@@ -226,10 +224,10 @@ BEGIN
     )
     SELECT
         BuildingEnergy.building_type,
-        AVG(BuildingEnergy.electricity_consumption::numeric) AS avg_electricity_consumption,
-        AVG(BuildingEnergy.natural_gas_consumption::numeric) AS avg_natural_gas_consumption,
-        AVG(BuildingEnergy.electricity_expenditure::numeric) AS avg_electricity_expenditure,
-        AVG(BuildingEnergy.natural_gas_expenditure::numeric) AS avg_natural_gas_expenditure
+        AVG(BuildingEnergy.electricity_consumption::numeric) AS avg_electricity_consumption_in_thous,
+        AVG(BuildingEnergy.natural_gas_consumption::numeric) AS avg_natural_gas_consumption_in_thous,
+        AVG(BuildingEnergy.electricity_expenditure::numeric) AS avg_electricity_expenditure_in_USD,
+        AVG(BuildingEnergy.natural_gas_expenditure::numeric) AS avg_natural_gas_expenditure_in_USD
     FROM
         BuildingEnergy
     GROUP BY
@@ -242,7 +240,7 @@ DROP FUNCTION IF EXISTS get_avg_electricity_consumption_by_employee_category();
 CREATE OR REPLACE FUNCTION get_avg_electricity_consumption_by_employee_category()
 RETURNS TABLE (
     employee_category TEXT,
-    avg_electricity_consumption NUMERIC
+    avg_electricity_consumption_in_thous NUMERIC
 )
 AS $$
 BEGIN
@@ -268,7 +266,7 @@ BEGIN
     )
     SELECT
         BuildingEmployeeEnergy.employee_category,
-        ROUND(AVG(BuildingEmployeeEnergy.electricity_consumption::numeric)) AS avg_electricity_consumption
+        ROUND(AVG(BuildingEmployeeEnergy.electricity_consumption::numeric)) AS avg_electricity_consumption_in_thous
     FROM
         BuildingEmployeeEnergy
     GROUP BY
@@ -284,7 +282,7 @@ CREATE OR REPLACE FUNCTION calculate_daylight_statistics()
 RETURNS TABLE (
     daylight_category TEXT,
     num_buildings BIGINT,
-    avg_electricity_consumption NUMERIC
+    avg_electricity_consumption_in_thous NUMERIC
 )
 AS $$
 BEGIN
@@ -316,7 +314,7 @@ BEGIN
     SELECT
         'Daylight' AS daylight_category,
         COUNT(*) AS num_buildings,
-        ROUND(AVG(ae.electricity_consumption_thous_btu)) AS avg_electricity_consumption
+        ROUND(AVG(ae.electricity_consumption_thous_btu)) AS avg_electricity_consumption_in_thous
     FROM
         daylight_buildings db
     LEFT JOIN
@@ -342,7 +340,7 @@ RETURNS TABLE (
     daylight_category TEXT,
     census_region CHARACTER VARYING(255),
     num_buildings BIGINT,
-    avg_electricity_consumption NUMERIC
+    avg_electricity_consumption_in_thous NUMERIC
 )
 AS $$
 BEGIN
@@ -382,7 +380,7 @@ BEGIN
         'Daylight' AS daylight_category,
         db.census_region,
         COUNT(*) AS num_buildings,
-        ROUND(AVG(ae.electricity_consumption_thous_btu)) AS avg_electricity_consumption
+        ROUND(AVG(ae.electricity_consumption_thous_btu)) AS avg_electricity_consumption_in_thous
     FROM
         DaylightBuildings db
     LEFT JOIN
@@ -396,7 +394,7 @@ BEGIN
         'No Daylight' AS daylight_category,
         ndb.census_region,
         COUNT(*) AS num_buildings,
-        ROUND(AVG(ae.electricity_consumption_thous_btu)) AS avg_electricity_consumption
+        ROUND(AVG(ae.electricity_consumption_thous_btu)) AS avg_electricity_consumption_in_thous
     FROM
         NoDaylightBuildings ndb
     LEFT JOIN
@@ -412,7 +410,7 @@ DROP FUNCTION IF EXISTS get_avg_energy_consumption_by_heating_system();
 CREATE OR REPLACE FUNCTION get_avg_energy_consumption_by_heating_system()
 RETURNS TABLE (
     heating_system VARCHAR(255),
-    avg_energy_consumption_per_sqft NUMERIC
+    avg_energy_consumption_in_thous_per_sqft NUMERIC
 )
 AS $$
 BEGIN
@@ -435,7 +433,7 @@ BEGIN
 
     SELECT
         HeatingSystems.heating_system,
-        ROUND(AVG(HeatingSystems.electricity_consumption / HeatingSystems.square_footage), 2) AS avg_energy_consumption_per_sqft
+        ROUND(AVG(HeatingSystems.electricity_consumption / HeatingSystems.square_footage), 2) AS avg_energy_consumption_in_thous_per_sqft
     FROM
         HeatingSystems
     WHERE
@@ -444,7 +442,7 @@ BEGIN
     GROUP BY
         HeatingSystems.heating_system
     ORDER BY
-        avg_energy_consumption_per_sqft;
+        avg_energy_consumption_in_thous_per_sqft;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -453,7 +451,7 @@ DROP FUNCTION IF EXISTS get_avg_energy_consumption_by_cooling_system();
 CREATE OR REPLACE FUNCTION get_avg_energy_consumption_by_cooling_system()
 RETURNS TABLE (
     cooling_system VARCHAR(255),
-    avg_energy_consumption_per_sqft NUMERIC
+    avg_energy_consumption_in_thous_per_sqft NUMERIC
 )
 AS $$
 BEGIN
@@ -475,7 +473,7 @@ BEGIN
     )
     SELECT
         CoolingSystems.cooling_system,
-        ROUND(AVG(CoolingSystems.electricity_consumption / CoolingSystems.square_footage), 2) AS avg_energy_consumption_per_sqft
+        ROUND(AVG(CoolingSystems.electricity_consumption / CoolingSystems.square_footage), 2) AS avg_energy_consumption_in_thous_per_sqft
     FROM
         CoolingSystems
     WHERE
@@ -484,7 +482,7 @@ BEGIN
     GROUP BY
         CoolingSystems.cooling_system
     ORDER BY
-        avg_energy_consumption_per_sqft;
+        avg_energy_consumption_in_thous_per_sqft;
 END;
 $$ LANGUAGE plpgsql;
 -- Air conditioning equipment dominated at 313.75, while the next highest of fuel oil/diesel/kerosene chiller was 61
@@ -548,8 +546,8 @@ RETURNS TABLE (
     window_type VARCHAR(255),
     has_tinted_windows BOOLEAN,
     has_reflective_windows BOOLEAN,
-    avg_electricity_consumption NUMERIC,
-    avg_natural_gas_consumption NUMERIC
+    avg_electricity_consumption_in_thous NUMERIC,
+    avg_natural_gas_consumption_in_thous NUMERIC
 )
 AS $$
 BEGIN
@@ -575,8 +573,8 @@ BEGIN
         WindowEnergyConsumption.window_type,
         WindowEnergyConsumption.has_tinted_windows,
         WindowEnergyConsumption.has_reflective_windows,
-        AVG(WindowEnergyConsumption.electricity_consumption) AS avg_electricity_consumption,
-        AVG(WindowEnergyConsumption.natural_gas_consumption) AS avg_natural_gas_consumption
+        AVG(WindowEnergyConsumption.electricity_consumption) AS avg_electricity_consumption_in_thous,
+        AVG(WindowEnergyConsumption.natural_gas_consumption) AS avg_natural_gas_consumption_in_thous
     FROM
         WindowEnergyConsumption
     WHERE
@@ -592,10 +590,11 @@ $$ LANGUAGE plpgsql;
 
 -- Question: Evaluate the impact of various lighting technologies (LED, fluorescent, etc.) on a building's electricity consumption.
 -- Buildings that utilized a certain lighting technology more than 50% of the time were categorized into using that lighting techology
+DROP FUNCTION IF EXISTS get_lighting_category_energy_consumption();
 CREATE OR REPLACE FUNCTION get_lighting_category_energy_consumption()
 RETURNS TABLE (
-    lighting_category VARCHAR(255),
-    avg_electricity_consumption numeric
+    lighting_category TEXT,
+    avg_electricity_consumption_in_thous NUMERIC
 )
 AS $$
 BEGIN
@@ -620,18 +619,17 @@ BEGIN
         LEFT JOIN
             annual_energy_consumption ae ON b.id = ae.building_id
     )
-    
     SELECT
-        lighting_category,
-        AVG(electricity_consumption) AS avg_electricity_consumption
+        lc.lighting_category,
+        AVG(lc.electricity_consumption) AS avg_electricity_consumption_in_thous
     FROM
-        LightingCategories
+        LightingCategories lc
     WHERE
-        lighting_category != 'Other' AND electricity_consumption IS NOT NULL
+        lc.lighting_category != 'Other' AND lc.electricity_consumption IS NOT NULL
     GROUP BY
-        lighting_category
+        lc.lighting_category
     ORDER BY
-        avg_electricity_consumption DESC;
+        avg_electricity_consumption_in_thous DESC;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -641,10 +639,10 @@ DROP FUNCTION IF EXISTS get_building_size_energy_consumption();
 CREATE OR REPLACE FUNCTION get_building_size_energy_consumption()
 RETURNS TABLE (
     square_footage_category TEXT,
-    avg_electricity_consumption NUMERIC,
-    avg_electricity_per_sqft NUMERIC,
-    avg_natural_gas_consumption NUMERIC,
-    avg_natural_gas_per_sqft NUMERIC
+    avg_electricity_consumption_in_thous NUMERIC,
+    avg_electricity_in_thous_per_sqft NUMERIC,
+    avg_natural_gas_consumption_in_thous NUMERIC,
+    avg_natural_gas_in_thous_per_sqft NUMERIC
 )
 AS $$
 BEGIN
@@ -673,10 +671,10 @@ BEGIN
     )
     SELECT
         BuildingSizeEnergyConsumption.square_footage_category,
-        AVG(BuildingSizeEnergyConsumption.electricity_consumption) AS avg_electricity_consumption,
-        AVG(BuildingSizeEnergyConsumption.electricity_consumption) / SUM(BuildingSizeEnergyConsumption.square_footage) AS avg_electricity_per_sqft,
-        AVG(BuildingSizeEnergyConsumption.natural_gas_consumption) AS avg_natural_gas_consumption,
-        AVG(BuildingSizeEnergyConsumption.natural_gas_consumption) / SUM(BuildingSizeEnergyConsumption.square_footage) AS avg_natural_gas_per_sqft
+        AVG(BuildingSizeEnergyConsumption.electricity_consumption) AS avg_electricity_consumption_in_thous,
+        AVG(BuildingSizeEnergyConsumption.electricity_consumption) / SUM(BuildingSizeEnergyConsumption.square_footage) AS avg_electricity_in_thous_per_sqft,
+        AVG(BuildingSizeEnergyConsumption.natural_gas_consumption) AS avg_natural_gas_consumption_in_thous,
+        AVG(BuildingSizeEnergyConsumption.natural_gas_consumption) / SUM(BuildingSizeEnergyConsumption.square_footage) AS avg_natural_gas_in_thous_per_sqft
     FROM
         BuildingSizeEnergyConsumption
     WHERE
@@ -684,7 +682,7 @@ BEGIN
     GROUP BY
         BuildingSizeEnergyConsumption.square_footage_category
     ORDER BY
-        avg_electricity_consumption DESC;
+        avg_electricity_consumption_in_thous DESC;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -795,7 +793,7 @@ RETURNS TABLE (
     air_conditioning_type VARCHAR(255),
     building_count BIGINT,
     percentage_within_complex NUMERIC,
-    avg_building_size NUMERIC
+    avg_building_size_in_sqft NUMERIC
 )
 AS $$
 BEGIN
@@ -823,7 +821,7 @@ BEGIN
         AirConditioningInformation.air_conditioning_type,
         COUNT(AirConditioningInformation.building_id) AS building_count,
         (COUNT(AirConditioningInformation.building_id) * 100.0 / SUM(COUNT(AirConditioningInformation.building_id)) OVER (PARTITION BY AirConditioningInformation.complex_type)) AS percentage_within_complex,
-        AVG(AirConditioningInformation.square_footage) AS avg_building_size
+        AVG(AirConditioningInformation.square_footage) AS avg_building_size_in_sqft
     FROM
         AirConditioningInformation
     GROUP BY
@@ -841,7 +839,7 @@ RETURNS TABLE (
     heating_type VARCHAR(255),
     building_count BIGINT,
     percentage_within_complex NUMERIC,
-    avg_building_size NUMERIC
+    avg_building_size_in_sqft NUMERIC
 )
 AS $$
 BEGIN
@@ -869,7 +867,7 @@ BEGIN
         HeatingInformation.heating_type,
         COUNT(HeatingInformation.building_id) AS building_count,
         (COUNT(HeatingInformation.building_id) * 100.0 / SUM(COUNT(HeatingInformation.building_id)) OVER (PARTITION BY HeatingInformation.complex_type)) AS percentage_within_complex,
-        AVG(HeatingInformation.square_footage) AS avg_building_size
+        AVG(HeatingInformation.square_footage) AS avg_building_size_in_sqft
     FROM
         HeatingInformation
     GROUP BY
@@ -960,8 +958,8 @@ DROP FUNCTION IF EXISTS get_energy_consumption_for_food_service();
 CREATE OR REPLACE FUNCTION get_energy_consumption_for_food_service()
 RETURNS TABLE (
     facility_type TEXT,
-    avg_electricity_consumption NUMERIC,
-    avg_natural_gas_consumption NUMERIC
+    avg_electricity_consumption_in_thous NUMERIC,
+    avg_natural_gas_consumption_in_thous NUMERIC
 )
 AS $$
 BEGIN
@@ -984,8 +982,8 @@ BEGIN
     )
     SELECT
         EnergyConsumption.facility_type,
-        AVG(EnergyConsumption.electricity_consumption) AS avg_electricity_consumption,
-        AVG(EnergyConsumption.natural_gas_consumption) AS avg_natural_gas_consumption
+        AVG(EnergyConsumption.electricity_consumption) AS avg_electricity_consumption_in_thous,
+        AVG(EnergyConsumption.natural_gas_consumption) AS avg_natural_gas_consumption_in_thous
     FROM
         EnergyConsumption
     GROUP BY
@@ -998,7 +996,7 @@ DROP FUNCTION IF EXISTS get_avg_carbon_output_by_building_activity();
 CREATE OR REPLACE FUNCTION get_avg_carbon_output_by_building_activity()
 RETURNS TABLE (
     building_activity VARCHAR(255),
-    avg_carbon_output NUMERIC
+    avg_carbon_output_in_gCO2e_per_kWh NUMERIC
 )
 AS $$
 BEGIN
@@ -1020,13 +1018,13 @@ BEGIN
     )
     SELECT
         CarbonByBuildingActivity.building_activity,
-        AVG(CarbonByBuildingActivity.average_carbon_output) AS avg_carbon_output
+        AVG(CarbonByBuildingActivity.average_carbon_output) AS avg_carbon_output_in_gCO2e_per_kWh
     FROM
         CarbonByBuildingActivity
     GROUP BY
         CarbonByBuildingActivity.building_activity
     ORDER BY
-        avg_carbon_output DESC;
+        avg_carbon_output_in_gCO2e_per_kWh DESC;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -1035,7 +1033,7 @@ DROP FUNCTION IF EXISTS get_avg_carbon_output_by_accessibility_modes();
 CREATE OR REPLACE FUNCTION get_avg_carbon_output_by_accessibility_modes()
 RETURNS TABLE (
     accessibility_category TEXT,
-    avg_carbon_output NUMERIC
+    avg_carbon_output_in_gCO2e_per_kWh NUMERIC
 )
 AS $$
 BEGIN
@@ -1063,13 +1061,13 @@ BEGIN
             WHEN CarbonByAccessibilityModes.number_of_escalators IS NOT NULL THEN 'Buildings with Escalators'
             ELSE 'Buildings with Neither'
         END AS accessibility_category,
-        AVG(CarbonByAccessibilityModes.average_carbon_output) AS avg_carbon_output
+        AVG(CarbonByAccessibilityModes.average_carbon_output) AS avg_carbon_output_in_gCO2e_per_kWh
     FROM
         CarbonByAccessibilityModes
     GROUP BY
         accessibility_category
     ORDER BY
-        avg_carbon_output DESC;
+        avg_carbon_output_in_gCO2e_per_kWh DESC;
 END;
 $$ LANGUAGE plpgsql;
 
