@@ -1,46 +1,36 @@
-import DataTable from '@/components/dataTable';
-import React, { useState, useTransition } from 'react';
+import DataDispay from "@/components/dataDispay";
+import DataTable, { DataTableProps } from "@/components/dataTable";
+import QuerySelectorCard from "@/components/querySelectorCard";
+import { Toaster } from "@/components/ui/toaster";
+import React, { useState } from "react";
 
-const Home = () =>{
-  const [data, setData] = useState<any>(null);
-  const [error, setError] = useState<any>(null);
-  const [isPending, startTransition] = useTransition();
-
-  const fetchData = async () => {
-    startTransition(() => {
-      setData(null);
-      setError(null);
-    });
-
-    try {
-      const response = await fetch('/api/test');
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const result = await response.json();
-      startTransition(() => {
-        setData(result);
-      });
-    } catch (err) {
-      console.error(err);
-      startTransition(() => {
-        setError(err);
-      });
-    }
-  };
-
+const Home = () => {
+  const [data, setData] = useState<DataTableProps<object> | undefined>();
+  const [isLoading, setIsLoading] = useState(false);
   return (
-    <div>
-      {isPending && <p>Loading...</p>}
-      {error && <p>There was an error! Please check the console log</p>}
-      {data && <div><DataTable fields={data.fields} rowData={data.rows}/></div>}
-      <div className="p-10"></div>
-      {data && <div><DataTable fields={data.fields} rowData={data.rows}/></div>}
-      <button onClick={fetchData}>Load Data</button>
-    </div>
+    <>
+      <main className="text-center p-10">
+        <h1 className="text-2xl font-bold">
+          US Building Carbon Intensity and Energy Usage Analyzer
+        </h1>
+        <div className="flex flex-col gap-10 w-full items-center">
+          <h2 className="text-muted-foreground text-sm ">
+            Based on the ElA's 2018 survey of Commercial Building Energy
+            Consumption
+          </h2>
+
+          <QuerySelectorCard setData={setData} setIsLoading={setIsLoading} />
+
+          <DataDispay
+            fields={data?.fields || []}
+            rowData={data?.rowData || []}
+            isLoading={isLoading}
+          />
+        </div>
+      </main>
+      <Toaster />
+    </>
   );
-}
-
-
+};
 
 export default Home;

@@ -7,27 +7,20 @@
 
 -- Question: What is the average cost of roof and wall construction materials for buildings located in a selected region?
 -- Input is the desired census region (ex. West)
-DROP FUNCTION IF EXISTS get_avg_costs_for_census_region(VARCHAR(255));
-CREATE OR REPLACE FUNCTION get_avg_costs_for_census_region(pCensusRegion VARCHAR(255))
+DROP FUNCTION IF EXISTS get_avg_costs_for_census_region();
+CREATE OR REPLACE FUNCTION get_avg_costs_for_census_region()
 RETURNS TABLE (
+    census_region varchar(255),
     avg_roof_cost numeric,
     avg_wall_cost numeric
 )
 AS $$
 DECLARE
-    validRegion BOOLEAN;
-BEGIN
-    -- Check if the input census region is valid
-    validRegion := FALSE;
-    
-    IF pCensusRegion IN ('West', 'South', 'Midwest', 'Northeast') THEN
-        validRegion := TRUE;
-    END IF;
 
-    IF validRegion THEN
-        -- If the region is valid, proceed with the query
+BEGIN
         RETURN QUERY
         SELECT
+            cr.label as census_region,
             AVG(rcm.average_cost) AS avg_roof_cost,
             AVG(wcm.average_cost) AS avg_wall_cost
         FROM
@@ -38,20 +31,18 @@ BEGIN
             roof_construction_materials rcm ON b.roof_construction_material_id = rcm.id
         JOIN
             wall_construction_materials wcm ON b.wall_construction_material_id = wcm.id
-        WHERE
-            cr.label = pCensusRegion;
-    ELSE
-        -- If the region is not valid, raise an exception or handle it as needed
-        RAISE EXCEPTION 'Invalid census region. Please use one of the following: WEST, SOUTH, MIDWEST, NORTHEAST';
-    END IF;
+        GROUP BY
+            cr.label;
+
 END;
 $$ LANGUAGE plpgsql;
 
 -- Question: How does the average annual electricity and natural gas consumption compare across different principal building activities and building owner types?
 -- Input is the principal building activity / industry
-DROP FUNCTION IF EXISTS get_avg_energy_consumption_for_industry(VARCHAR(255));
-CREATE OR REPLACE FUNCTION get_avg_energy_consumption_for_industry(pIndustry VARCHAR(255))
+DROP FUNCTION IF EXISTS get_avg_energy_consumption_for_industry();
+CREATE OR REPLACE FUNCTION get_avg_energy_consumption_for_industry()
 RETURNS TABLE (
+    building_activity varchar(255),
     avg_electricity_consumption numeric,
     avg_natural_gas_consumption numeric
 )
@@ -59,6 +50,7 @@ AS $$
 BEGIN
     RETURN QUERY
     SELECT
+        p.label as building_activity,
         AVG(ae.electricity_consumption_thous_btu::numeric) AS avg_electricity_consumption,
         AVG(ae.natural_gas_consumption_thous_btu::numeric) AS avg_natural_gas_consumption
     FROM
@@ -67,17 +59,17 @@ BEGIN
         principal_building_activity p ON b.principal_building_activity = p.id
     LEFT JOIN
         annual_energy_consumption ae ON b.id = ae.building_id
-    WHERE
-        p.label = pIndustry
     GROUP BY
-        p.label;
+        p.label
+    ORDER BY building_activity;
 END;
 $$ LANGUAGE plpgsql;
 
 -- Grouped by building owner type
-DROP FUNCTION IF EXISTS get_avg_energy_consumption_for_owner_type(VARCHAR(255));
-CREATE OR REPLACE FUNCTION get_avg_energy_consumption_for_owner_type(pOwnerType VARCHAR(255))
+DROP FUNCTION IF EXISTS get_avg_energy_consumption_for_owner_type();
+CREATE OR REPLACE FUNCTION get_avg_energy_consumption_for_owner_type()
 RETURNS TABLE (
+    owner_type  varchar(255),
     avg_electricity_consumption numeric,
     avg_natural_gas_consumption numeric
 )
@@ -85,6 +77,7 @@ AS $$
 BEGIN
     RETURN QUERY
     SELECT
+        bot.label as owner_type,
         AVG(aec.electricity_consumption_thous_btu) AS avg_electricity_consumption,
         AVG(aec.natural_gas_consumption_thous_btu) AS avg_natural_gas_consumption
     FROM
@@ -93,10 +86,9 @@ BEGIN
         building_owner_type bot ON b.building_owner_type = bot.id
     JOIN
         annual_energy_consumption aec ON b.id = aec.building_id
-    WHERE
-        bot.label = pOwnerType
     GROUP BY
-        bot.label;
+        bot.label
+    order by owner_type;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -104,13 +96,12 @@ $$ LANGUAGE plpgsql;
 -- Question: What is the average electricity and natural gas consumption for buildings that have undergone specific types of renovations (like HVAC equipment upgrade, insulation upgrade) compared to those that haven't?
 -- Input is whether one is querying for either comparisons involving HVAC Upgrade, Insulation Upgrade, or Fire Safety Upgrade
 DROP FUNCTION IF EXISTS get_avg_energy_consumption_for_renovation_options(BOOLEAN, BOOLEAN, BOOLEAN);
-CREATE OR REPLACE FUNCTION get_avg_energy_consumption_for_renovation_options(
-    pHVACUpgrade BOOLEAN,
-    pInsulationUpgrade BOOLEAN,
-    pFireSafetyUpgrade BOOLEAN
-)
+CREATE OR REPLACE FUNCTION get_avg_energy_consumption_for_renovation_options()
 RETURNS TABLE (
     renovation_status VARCHAR(50),
+    hvac_equip_upgrade BOOLEAN,
+    fire_safety_upgrade BOOLEAN,
+    insulation_upgrade BOOLEAN,
     avg_electricity_consumption numeric,
     avg_natural_gas_consumption numeric
 )
@@ -122,6 +113,9 @@ BEGIN
             WHEN r.building_id IS NOT NULL THEN 'With Renovation'::VARCHAR(50)
             ELSE 'Without Renovation'::VARCHAR(50)
         END AS renovation_status,
+        r.hvac_equip_upgrade,
+        r.fire_safety_upgrade,
+        r.insulation_upgrade,
         AVG(aec.electricity_consumption_thous_btu) AS avg_electricity_consumption,
         AVG(aec.natural_gas_consumption_thous_btu) AS avg_natural_gas_consumption
     FROM
@@ -131,22 +125,21 @@ BEGIN
     ON
         aec.building_id = r.building_id
         AND (
-            (pHVACUpgrade AND r.hvac_equip_upgrade = TRUE)
-            OR (pInsulationUpgrade AND r.insulation_upgrade = TRUE)
-            OR (pFireSafetyUpgrade AND r.fire_safety_upgrade = TRUE)
+            ( r.hvac_equip_upgrade = TRUE)
+            OR ( r.insulation_upgrade = TRUE)
+            OR ( r.fire_safety_upgrade = TRUE)
         )
     GROUP BY
-        renovation_status;
+        renovation_status, r.hvac_equip_upgrade, r.insulation_upgrade, r.fire_safety_upgrade
+    ORDER BY renovation_status, r.hvac_equip_upgrade,r.insulation_upgrade, r.fire_safety_upgrade desc;
 END;
 $$ LANGUAGE plpgsql;
 
 -- Question: What is the average electricity consumption per square foot for buildings, categorized by their construction year range? Usage type?
 -- Query was broken into two parts, one for Construction Year Range, another for Usage Type
 -- Input is the construction year category
-DROP FUNCTION IF EXISTS get_avg_electricity_per_sqft_by_construction_year(INT);
-CREATE OR REPLACE FUNCTION get_avg_electricity_per_sqft_by_construction_year(
-    pConstructionYearCategory INT
-)
+DROP FUNCTION IF EXISTS get_avg_electricity_per_sqft_by_construction_year();
+CREATE OR REPLACE FUNCTION get_avg_electricity_per_sqft_by_construction_year()
 RETURNS TABLE (
     construction_year_range VARCHAR(50),
     avg_electricity_per_sqft numeric
@@ -171,18 +164,15 @@ BEGIN
         buildings b
     JOIN
         annual_energy_consumption aec ON b.id = aec.building_id
-    WHERE
-        b.year_of_construction_category = pConstructionYearCategory
     GROUP BY
-        construction_year_range;
+        year_of_construction_category
+    ORDER BY year_of_construction_category;
 END;
 $$ LANGUAGE plpgsql;
 
 -- Input is principal building activity
-DROP FUNCTION IF EXISTS get_avg_electricity_per_sqft_by_building_activity(VARCHAR(255));
-CREATE OR REPLACE FUNCTION get_avg_electricity_per_sqft_by_building_activity(
-    pBuildingActivity VARCHAR(255)
-)
+DROP FUNCTION IF EXISTS get_avg_electricity_per_sqft_by_building_activity();
+CREATE OR REPLACE FUNCTION get_avg_electricity_per_sqft_by_building_activity()
 RETURNS TABLE (
     principal_building_activity VARCHAR(255),
     avg_electricity_per_sqft numeric
@@ -199,8 +189,6 @@ BEGIN
         annual_energy_consumption aec ON b.id = aec.building_id
     JOIN
         principal_building_activity pb ON b.principal_building_activity = pb.id
-    WHERE
-        pb.label = pBuildingActivity
     GROUP BY
         pb.label;
 END;
@@ -715,36 +703,38 @@ AS $$
 BEGIN
     RETURN QUERY
     WITH RoofConstruction AS (
-        SELECT
-            b.id AS building_id,
-            CASE
-                WHEN b.year_of_construction_category = 2 THEN 'Before 1946'
-                WHEN b.year_of_construction_category = 3 THEN '1946-1959'
-                WHEN b.year_of_construction_category = 4 THEN '1960-1969'
-                WHEN b.year_of_construction_category = 5 THEN '1970-1979'
-                WHEN b.year_of_construction_category = 6 THEN '1980-1989'
-                WHEN b.year_of_construction_category = 7 THEN '1990-1999'
-                WHEN b.year_of_construction_category = 8 THEN '2000-2012'
-                WHEN b.year_of_construction_category = 9 THEN '2013-2018'
-                ELSE 'Unknown'
-            END AS construction_year_range,
-            rcmt.roof_construction_material AS roof_material
-        FROM
-            buildings b
-        LEFT JOIN
-            roof_construction_materials rcmt ON b.roof_construction_material_id = rcmt.id
-    )
     SELECT
-        RoofConstruction.construction_year_range,
-        RoofConstruction.roof_material,
-        COUNT(RoofConstruction.building_id) AS building_count,
-        (COUNT(RoofConstruction.building_id) * 100.0 / SUM(COUNT(RoofConstruction.building_id)) OVER (PARTITION BY RoofConstruction.construction_year_range)) AS percentage
+        b.id AS building_id,
+        b.year_of_construction_category,
+        CASE
+            WHEN b.year_of_construction_category = 2 THEN 'Before 1946'
+            WHEN b.year_of_construction_category = 3 THEN '1946-1959'
+            WHEN b.year_of_construction_category = 4 THEN '1960-1969'
+            WHEN b.year_of_construction_category = 5 THEN '1970-1979'
+            WHEN b.year_of_construction_category = 6 THEN '1980-1989'
+            WHEN b.year_of_construction_category = 7 THEN '1990-1999'
+            WHEN b.year_of_construction_category = 8 THEN '2000-2012'
+            WHEN b.year_of_construction_category = 9 THEN '2013-2018'
+            ELSE 'Unknown'
+        END AS construction_year_range,
+        rcmt.roof_construction_material AS roof_material
     FROM
-        RoofConstruction
-    GROUP BY
-        RoofConstruction.construction_year_range, RoofConstruction.roof_material
-    ORDER BY
-        RoofConstruction.construction_year_range, building_count DESC;
+        buildings b
+    LEFT JOIN
+        roof_construction_materials rcmt ON b.roof_construction_material_id = rcmt.id
+)
+SELECT
+    RoofConstruction.construction_year_range,
+    RoofConstruction.roof_material,
+    COUNT(RoofConstruction.building_id) AS building_count,
+    (COUNT(RoofConstruction.building_id) * 100.0 / SUM(COUNT(RoofConstruction.building_id)) OVER (PARTITION BY RoofConstruction.year_of_construction_category)) AS percentage
+FROM
+    RoofConstruction
+GROUP BY
+    RoofConstruction.year_of_construction_category, RoofConstruction.construction_year_range, RoofConstruction.roof_material
+ORDER BY
+    RoofConstruction.year_of_construction_category, building_count DESC;
+
 END;
 $$ LANGUAGE plpgsql;
 
@@ -774,7 +764,8 @@ BEGIN
                 WHEN b.year_of_construction_category = 9 THEN '2013-2018'
                 ELSE 'Unknown'
             END AS construction_year_range,
-            wcm.wall_construction_material AS wall_material
+            wcm.wall_construction_material AS wall_material,
+            b.year_of_construction_category
         FROM
             buildings b
         LEFT JOIN
@@ -788,9 +779,9 @@ BEGIN
     FROM
         WallConstruction
     GROUP BY
-        WallConstruction.construction_year_range, WallConstruction.wall_material
+        year_of_construction_category, WallConstruction.construction_year_range, WallConstruction.wall_material
     ORDER BY
-        WallConstruction.construction_year_range, building_count DESC;
+       year_of_construction_category, WallConstruction.construction_year_range, building_count DESC;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -1123,3 +1114,5 @@ BEGIN
         eu.census_region, building_count DESC;
 END;
 $$ LANGUAGE plpgsql;
+
+SELECT * FROM  get_consolidated_energy_source_usage();
