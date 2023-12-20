@@ -1,6 +1,7 @@
 # Final Project for Databases Fall 2023
 ## Deployment
 Deployed to vercel at this link: https://db-final.vercel.app/
+
 Use `vercel --prod` to deploy to production
 
 
