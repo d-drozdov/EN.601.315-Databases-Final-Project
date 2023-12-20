@@ -24,8 +24,6 @@ const DataDispay = <T extends object>({
   rowData,
   isLoading,
 }: DataTableProps<T> & Props) => {
-  console.log("fields dataDisplay", fields);
-  console.log("rowData dataDisplay", rowData);
   let visual = <></>;
   console.log("id", id);
   switch (id?.toString()) {
@@ -77,7 +75,8 @@ const DataDispay = <T extends object>({
             <CardDescription className="w-3/4">
               This area will display the data you have selected and any
               associated visualizations. The data tables are sortable by
-              clicking on the column headers.
+              clicking on the column headers. Additionally, you can hover over
+              charts to see more information.
             </CardDescription>
           </div>
         </CardHeader>
@@ -85,7 +84,7 @@ const DataDispay = <T extends object>({
           {isLoading ? (
             <Loading />
           ) : (
-            <div className="flex flex-col gap-10">
+            <div className="flex flex-col">
               <div className="w-full my-4">{visual}</div>
               <DataTable fields={fields} rowData={rowData} id={id} />
             </div>

@@ -23,7 +23,8 @@ const QuerySelectorCard = ({ setData, setIsLoading }: Props) => {
         <CardHeader>
           <CardTitle>Please select your query</CardTitle>
           <CardDescription>
-            Use this area to select your queries
+            Use this area to select your query. There are two types of queries:
+            queries that return data, and queries that return both visualizations and data.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex justify-center">

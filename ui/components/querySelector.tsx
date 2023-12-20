@@ -99,7 +99,7 @@ const QuerySelector = ({ setData, setIsLoading }: Props) => {
                 </FormControl>
                 <SelectContent className="w-[600px]">
                   <SelectGroup>
-                    <SelectLabel className="font-semibold ml-2">
+                    <SelectLabel className="font-semibold ml-1 text-lg ">
                       Visualization and Data
                     </SelectLabel>
                     {proceduresSplit.VISUALIZED.map((item, index) => (
@@ -109,12 +109,12 @@ const QuerySelector = ({ setData, setIsLoading }: Props) => {
                     ))}
                   </SelectGroup>
                   <SelectGroup>
-                    <SelectLabel className="font-semibold ml-2">
+                    <SelectLabel className="font-semibold ml-1 pt-2 text-lg">
                       {" "}
                       Data Only{" "}
                     </SelectLabel>
                     {proceduresSplit.DATA.map((item, index) => (
-                      <SelectItem key={item.id} value={item.question}>
+                      <SelectItem key={item.question} value={item.id}>
                         {`${index + 1}) ${item.question}`}
                       </SelectItem>
                     ))}
