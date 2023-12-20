@@ -1,14 +1,28 @@
 import React from "react";
 import { Bar } from "react-chartjs-2";
 import "chart.js/auto";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
 
-// Define the prop type for the BarChartComponent
-export type BarChartProps<T extends object> = {
-  fields: string[] | undefined;
-  rowData: T[] | undefined;
-};
+// Register the components with ChartJS
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
+import { BarChartProps } from "./visual2";
 
-const visual2 = <T extends object>({ fields, rowData }: BarChartProps<T>) => {
+const visual9 = <T extends object>({ fields, rowData }: BarChartProps<T>) => {
   if (!fields || !rowData) {
     return <p>No data to display</p>;
   }
@@ -22,34 +36,28 @@ const visual2 = <T extends object>({ fields, rowData }: BarChartProps<T>) => {
       (item[fields[1] as keyof T] as unknown as string).replace(/,/g, "")
     )
   );
-  const naturalGasData = rowData.map((item) =>
-    parseFloat(
-      (item[fields[2] as keyof T] as unknown as string).replace(/,/g, "")
-    )
-  );
 
   const chartData = {
-    labels,
+    labels: labels,
     datasets: [
       {
         label: "Avg Electricity Consumption (in thous BTU)",
         data: electricityData,
-        backgroundColor: "rgba(53, 162, 235, 0.5)",
-      },
-      {
-        label: "Avg Natural Gas Consumption (in thous BTU)",
-        data: naturalGasData,
-        backgroundColor: "rgba(255, 99, 132, 0.5)",
+        backgroundColor: ["rgba(255, 206, 86, 0.5)","rgba(54, 162, 235, 0.5)"],
       },
     ],
   };
 
   const options = {
+    indexAxis: "y",
     scales: {
-      y: {
+      x: {
         beginAtZero: true,
+        title: {
+          display: true,
+          text: "Average Electricity Consumption (in thous BTU)",
+        },
         ticks: {
-          // Include a dollar sign in the ticks and format numbers with commas
           callback: function (value: any) {
             return new Intl.NumberFormat().format(value);
           },
@@ -62,7 +70,7 @@ const visual2 = <T extends object>({ fields, rowData }: BarChartProps<T>) => {
       },
       title: {
         display: true,
-        text: "Average Consumption Comparison of Electricity and Natural Gas",
+        text: "Daylight vs No Daylight - Electricity Consumption",
         font: {
           size: 25,
           weight: "bold",
@@ -74,4 +82,4 @@ const visual2 = <T extends object>({ fields, rowData }: BarChartProps<T>) => {
   return <Bar data={chartData} options={options} />;
 };
 
-export default visual2;
+export default visual9;

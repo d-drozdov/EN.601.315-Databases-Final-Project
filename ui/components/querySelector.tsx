@@ -16,13 +16,14 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  SelectGroup,
 } from "@/components/ui/select";
 import { toast } from "@/components/ui/use-toast";
 import axios from "axios";
 
 import { procedureRecord } from "@/constants/procedure_dict";
-import { useRouter } from "next/router";
 import { DataTableProps } from "./dataTable";
+import { SelectLabel } from "@radix-ui/react-select";
 
 const FormSchema = z.object({
   query: z.string({
@@ -55,15 +56,29 @@ const QuerySelector = ({ setData, setIsLoading }: Props) => {
     setIsLoading(false);
   }
 
-  const procedureOptions = Object.entries(procedureRecord).map(
-    ([key, value]) => {
-      return (
-        <SelectItem key={key} value={key}>
-          {`${key}) ${value.question}`}
-        </SelectItem>
-      );
+  const proceduresSplit = {
+    VISUALIZED: [],
+    DATA: [],
+  } as Record<
+    string,
+    Array<{
+      question: string;
+      functionName: string;
+      visualType: number | null;
+      id: string;
+    }>
+  >;
+  
+  for (const [key, value] of Object.entries(procedureRecord)) {
+    let newRecord = { ...value, id: key };
+    if (value.visualType !== null) {
+      proceduresSplit.VISUALIZED.push(newRecord);
+    } else {
+      // Otherwise, add it to "DATA"
+      proceduresSplit.DATA.push(newRecord);
     }
-  );
+  }
+  console.log("proceduresSplit", proceduresSplit)
 
   return (
     <Form {...form}>
@@ -83,7 +98,27 @@ const QuerySelector = ({ setData, setIsLoading }: Props) => {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent className="w-[600px]">
-                  {procedureOptions}
+                  <SelectGroup>
+                    <SelectLabel className="font-semibold ml-2">
+                      Visualization and Data
+                    </SelectLabel>
+                    {proceduresSplit.VISUALIZED.map((item, index) => (
+                      <SelectItem key={item.question} value={item.id}>
+                        {`${index + 1}) ${item.question}`}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                  <SelectGroup>
+                    <SelectLabel className="font-semibold ml-2">
+                      {" "}
+                      Data Only{" "}
+                    </SelectLabel>
+                    {proceduresSplit.DATA.map((item, index) => (
+                      <SelectItem key={item.id} value={item.question}>
+                        {`${index + 1}) ${item.question}`}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
                 </SelectContent>
               </Select>
               <FormMessage />

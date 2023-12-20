@@ -74,7 +74,7 @@ ORDER BY
 -- I'm not sure what buildings could be trying to hide with their principal building activity and why their electricity and natural gas consumption
 -- is so high.
 
--- Question: What is the average electricity and natural gas consumption for buildings that have undergone specific types of renovations (like HVAC equipment upgrade, insulation upgrade) compared to those that haven't? //VISUAL V2: Two simple bar charts comparing with and without HVAC
+-- Question: What is the average electricity and natural gas consumption for buildings that have undergone specific types of renovations (like HVAC equipment upgrade, insulation upgrade) compared to those that haven't? 
 -- Query was broken into three parts, one for HVAC Upgrade, one for Insulation Upgrade, and another for Fire Safety Upgrade
 -- Average consumption for buildings with HVAC equipment upgrade
 SELECT

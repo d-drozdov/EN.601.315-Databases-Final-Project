@@ -1,15 +1,13 @@
-import React from "react";
 import { Bar } from "react-chartjs-2";
+import { BarChartProps } from "./visual2";
 import "chart.js/auto";
 
-// Define the prop type for the BarChartComponent
-export type BarChartProps<T extends object> = {
-  fields: string[] | undefined;
-  rowData: T[] | undefined;
-};
-
-const visual2 = <T extends object>({ fields, rowData }: BarChartProps<T>) => {
-  if (!fields || !rowData) {
+const visual5_6 = <T extends object>({
+  fields,
+  rowData,
+  title,
+}: BarChartProps<T> & { title: string }) => {
+  if (!fields || !rowData || fields.length < 1 || rowData.length < 1) {
     return <p>No data to display</p>;
   }
 
@@ -22,11 +20,6 @@ const visual2 = <T extends object>({ fields, rowData }: BarChartProps<T>) => {
       (item[fields[1] as keyof T] as unknown as string).replace(/,/g, "")
     )
   );
-  const naturalGasData = rowData.map((item) =>
-    parseFloat(
-      (item[fields[2] as keyof T] as unknown as string).replace(/,/g, "")
-    )
-  );
 
   const chartData = {
     labels,
@@ -36,17 +29,13 @@ const visual2 = <T extends object>({ fields, rowData }: BarChartProps<T>) => {
         data: electricityData,
         backgroundColor: "rgba(53, 162, 235, 0.5)",
       },
-      {
-        label: "Avg Natural Gas Consumption (in thous BTU)",
-        data: naturalGasData,
-        backgroundColor: "rgba(255, 99, 132, 0.5)",
-      },
     ],
   };
 
   const options = {
+    indexAxis: "y",
     scales: {
-      y: {
+      x: {
         beginAtZero: true,
         ticks: {
           // Include a dollar sign in the ticks and format numbers with commas
@@ -62,7 +51,7 @@ const visual2 = <T extends object>({ fields, rowData }: BarChartProps<T>) => {
       },
       title: {
         display: true,
-        text: "Average Consumption Comparison of Electricity and Natural Gas",
+        text: title,
         font: {
           size: 25,
           weight: "bold",
@@ -70,8 +59,8 @@ const visual2 = <T extends object>({ fields, rowData }: BarChartProps<T>) => {
       },
     },
   };
+  console.log("chartData", chartData);
   //@ts-ignore
   return <Bar data={chartData} options={options} />;
 };
-
-export default visual2;
+export default visual5_6;

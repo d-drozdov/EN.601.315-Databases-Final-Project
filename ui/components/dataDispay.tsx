@@ -11,6 +11,10 @@ import {
 import Loading from "./loading";
 import React from "react";
 import Visual2 from "./visuals/visual2";
+import Visual56 from "./visuals/visual5_6";
+import Visual9 from "./visuals/visual9";
+import Visual13 from "./visuals/visual13";
+import Visual26 from "./visuals/visual26";
 type Props = {
   isLoading: boolean;
 };
@@ -22,6 +26,47 @@ const DataDispay = <T extends object>({
 }: DataTableProps<T> & Props) => {
   console.log("fields dataDisplay", fields);
   console.log("rowData dataDisplay", rowData);
+  let visual = <></>;
+  console.log("id", id);
+  switch (id?.toString()) {
+    case "2":
+      visual = <Visual2 fields={fields} rowData={rowData} />;
+      break;
+    case "5":
+      visual = (
+        <Visual56
+          fields={fields}
+          rowData={rowData}
+          title={
+            "Average Consumption Comparison of Electricity Based on Time Period"
+          }
+        />
+      );
+      break;
+    case "6":
+      visual = (
+        <Visual56
+          fields={fields}
+          rowData={rowData}
+          title={
+            "Average Consumption Comparison of Electricity Based on Building Usage"
+          }
+        />
+      );
+      break;
+    case "9":
+      visual = <Visual9 fields={fields} rowData={rowData} />;
+      break;
+    case "13":
+      visual = <Visual13 fields={fields} rowData={rowData} />;
+      break;
+    case "26":
+      visual = <Visual26 fields={fields} rowData={rowData} />;
+      break;
+    default:
+      visual = <> </>;
+      break;
+  }
 
   return (
     <>
@@ -41,9 +86,7 @@ const DataDispay = <T extends object>({
             <Loading />
           ) : (
             <div className="flex flex-col gap-10">
-              <div className="w-full my-4">
-                <Visual2 fields={fields} rowData={rowData} />
-              </div>
+              <div className="w-full my-4">{visual}</div>
               <DataTable fields={fields} rowData={rowData} id={id} />
             </div>
           )}

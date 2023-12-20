@@ -9,7 +9,7 @@ export const procedureRecord = {
     question:
       "How does the average annual electricity and natural gas consumption compare across different principal building activities and building owner types?",
     functionName: "get_avg_energy_consumption_for_industry",
-    visualType: "2",
+    visualType: 2,
   },
   3: {
     question:
@@ -27,13 +27,13 @@ export const procedureRecord = {
     question:
       "What is the average electricity consumption per square foot for buildings, categorized by their construction year range?",
     functionName: "get_avg_electricity_per_sqft_by_construction_year",
-    visualType: null,
+    visualType: 5,
   },
   6: {
     question:
       "What is the average electricity consumption per square foot for buildings based on their principal building activity?",
     functionName: "get_avg_electricity_per_sqft_by_building_activity",
-    visualType: null,
+    visualType: 6,
   },
   7: {
     question:
@@ -51,7 +51,7 @@ export const procedureRecord = {
     question:
       "How does electricity consumption for lighting compare in buildings with significant daylight exposure versus those with less?",
     functionName: "calculate_daylight_statistics",
-    visualType: null,
+    visualType: 9,
   },
   10: {
     question:
@@ -75,7 +75,7 @@ export const procedureRecord = {
     question:
       "What are the most common fuel types used for water heating in buildings across different census regions?",
     functionName: "get_water_heating_system_statistics",
-    visualType: null,
+    visualType: 13,
   },
   14: {
     question:
