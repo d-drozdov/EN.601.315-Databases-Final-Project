@@ -5,6 +5,7 @@ import { Column, useTable, useSortBy, HeaderGroup } from "react-table";
 export type DataTableProps<T extends object> = {
   fields: string[] | undefined;
   rowData: T[] | undefined;
+  id: string | undefined;
 };
 
 const DataTable = <T extends object>({
@@ -25,7 +26,7 @@ const DataTable = <T extends object>({
   const tableInstance = useTable({ columns, data: rowData }, useSortBy);
 
   return (
-    <div className="flex justify-center max-w-full">
+    <div className="flex justify-center max-w-full w-full">
       <div className="overflow-x-auto relative shadow-lg sm:rounded-lg max-h-[750px]">
         <table
           {...tableInstance.getTableProps()}

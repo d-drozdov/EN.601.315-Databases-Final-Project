@@ -22,6 +22,7 @@ const Home = () => {
           <QuerySelectorCard setData={setData} setIsLoading={setIsLoading} />
 
           <DataDispay
+            id={data?.id}
             fields={data?.fields || []}
             rowData={data?.rowData || []}
             isLoading={isLoading}

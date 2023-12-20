@@ -2,6 +2,8 @@ import { loggerSql } from "@/utils/sql";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { procedureRecord } from "@/constants/procedure_dict";
 import { createClient } from "@vercel/postgres";
+import { boolean } from "zod";
+import { parse } from "path";
 
 export default async function handler(
   req: NextApiRequest,
@@ -23,7 +25,7 @@ export default async function handler(
   let result;
   switch (queryId) {
     case 1:
-      console.log('SELECT * FROM get_avg_costs_for_census_region();')
+      console.log("SELECT * FROM get_avg_costs_for_census_region();");
       result =
         await loggerSql`SELECT * FROM get_avg_costs_for_census_region();`;
       break;
@@ -130,7 +132,26 @@ export default async function handler(
   }
 
   res.status(200).json({
-    rowData: result.rows,
+    rowData: result.rows.map((row) => {
+      Object.entries(row).map(([k, v]) => {
+        if (k === "employee_category") {
+          row[k] = v;
+        } else if (!Number.isNaN(parseFloat(v))) {
+          const num = parseFloat(v).toFixed(2) as unknown as number;
+          if (num > 9999 || num < 1000) {
+            row[k] = Intl.NumberFormat().format(num);
+          }
+        } else if (typeof v === "boolean") {
+          row[k] = v ? "Yes" : "No";
+        } else if (v === null) {
+          row[k] = "N/A";
+        } else {
+          row[k] = v;
+        }
+      });
+      return row;
+    }),
     fields: result.fields.map((field) => field.name),
+    id: queryId,
   });
 }

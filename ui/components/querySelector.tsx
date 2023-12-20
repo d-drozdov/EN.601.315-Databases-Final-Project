@@ -59,7 +59,7 @@ const QuerySelector = ({ setData, setIsLoading }: Props) => {
     ([key, value]) => {
       return (
         <SelectItem key={key} value={key}>
-          {value.question}
+          {`${key}) ${value.question}`}
         </SelectItem>
       );
     }

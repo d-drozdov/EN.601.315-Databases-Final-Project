@@ -9,7 +9,7 @@ export const procedureRecord = {
     question:
       "How does the average annual electricity and natural gas consumption compare across different principal building activities and building owner types?",
     functionName: "get_avg_energy_consumption_for_industry",
-    visualType: null,
+    visualType: "2",
   },
   3: {
     question:

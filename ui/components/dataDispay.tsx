@@ -9,16 +9,20 @@ import {
   CardContent,
 } from "./ui/card";
 import Loading from "./loading";
+import React from "react";
+import Visual2 from "./visuals/visual2";
 type Props = {
   isLoading: boolean;
 };
 const DataDispay = <T extends object>({
+  id,
   fields,
   rowData,
   isLoading,
 }: DataTableProps<T> & Props) => {
   console.log("fields dataDisplay", fields);
   console.log("rowData dataDisplay", rowData);
+
   return (
     <>
       <Card className="w-11/12">
@@ -34,9 +38,14 @@ const DataDispay = <T extends object>({
         </CardHeader>
         <CardContent className="flex justify-center">
           {isLoading ? (
-            <Loading/>
+            <Loading />
           ) : (
-            <DataTable fields={fields} rowData={rowData} />
+            <div className="flex flex-col gap-10">
+              <div className="w-full my-4">
+                <Visual2 fields={fields} rowData={rowData} />
+              </div>
+              <DataTable fields={fields} rowData={rowData} id={id} />
+            </div>
           )}
         </CardContent>
       </Card>
